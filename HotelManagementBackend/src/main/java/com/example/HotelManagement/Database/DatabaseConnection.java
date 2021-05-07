@@ -1,5 +1,7 @@
 package com.example.HotelManagement.Database;
 
+import org.apache.coyote.http11.filters.SavedRequestInputFilter;
+
 import java.sql.*;
 
 public class DatabaseConnection {
@@ -98,7 +100,7 @@ public class DatabaseConnection {
     }
 
     /*
-    ============================TABLE DEFINITIONS============================
+    ============================USER TABLE DEFINITIONS============================
      */
     public static final String CREATE_USERS = "CREATE TABLE IF NOT EXISTS Users(\n" +
             "                      id INT,\n" +
@@ -181,4 +183,46 @@ public class DatabaseConnection {
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
             "    CHECK (id > 0));";
+
+    /*
+    ============================ROOM TABLE DEFINITIONS============================
+     */
+    public static final String CREATE_ROOM = "CREATE TABLE Room (\n" +
+            "    room_no INT,\n" +
+            "    building_no VARCHAR(50),\n" +
+            "    type VARCHAR(50) NOT NULL,\n" +
+            "    description VARCHAR(5000),\n" +
+            "    PRIMARY KEY (room_no, building_no),\n" +
+            "    FOREIGN KEY (type) REFERENCES Room_Type(type)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (building_no) REFERENCES Building(building_no)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (room_no > 0 AND  LENGTH(building_no) > 0 AND LENGTH(type) > 0));";      //LENGTH(type) produces warning
+
+    public static final String CREATE_ROOM_TYPE = "CREATE TABLE Room_Type (\n" +
+            "    type VARCHAR(50),\n" +
+            "    price NUMERIC(18, 2) NOT NULL,\n" +
+            "    no_of_people INT NOT NULL,\n" +
+            "    PRIMARY KEY (type),\n" +
+            "    CHECK (LENGTH(type) > 0));";   //LENGTH(type) produces warning
+
+    public static final String CREATE_RESERVATION = "CREATE TABLE Reservation(\n" +
+            "    reservation_id INT,\n" +
+            "    guest_id INT NOT NULL,\n" +
+            "    room_no INT,\n" +
+            "    building_no VARCHAR(50),\n" +
+            "    check_in_date DATE NOT NULL,\n" +
+            "    check_out_date DATE NOT NULL,\n" +
+            "    PRIMARY KEY (reservation_id),\n" +
+            "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (room_no,building_no) REFERENCES Room(room_no, building_no)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (reservation_id > 0 AND guest_id > 0 AND check_in_date < check_out_date AND room_no > 0 AND  LENGTH(building_no) > 0) );";
+
+    public static final String CREATE_COMMENT = "Comment next";
 }
