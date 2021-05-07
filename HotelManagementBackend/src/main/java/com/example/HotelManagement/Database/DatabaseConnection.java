@@ -1,33 +1,55 @@
 package com.example.HotelManagement.Database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseConnection {
+
+    public final static int FETCH = 0;
+    public final static int UPDATE = 1;
 
     private final String url = "jdbc:mysql://dijkstra.ug.bcc.bilkent.edu.tr:3306/bora_cun";
     private final String user = "bora.cun";
     private final String pass = "DPZ3a7Km";
 
-    public DatabaseConnection() {    }
+    public DatabaseConnection() {}
 
-    public void connect() {
+    public ResultSet execute(String query , int type ) {
+        Connection con = null;
+        Statement stmt = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
+            ResultSet resultSet = null;
             //Connection
             System.out.println("Connecting to the database...");
-            Connection con = DriverManager.getConnection(url, user, pass);
+            con = DriverManager.getConnection(url, user, pass);
             System.out.println("Connection successful.");
 
-            //Statement
-            Statement stmt = con.createStatement();
+            stmt = con.createStatement();
 
-            //query
+            if( type == FETCH ){
+                resultSet = stmt.executeQuery(query);
+                con.close();
+                return resultSet;
+            }
+            else if( type == UPDATE) {
+                stmt.executeUpdate(query);
+                con.close();
+                return null;
+            }
         }
         catch (Exception e) {
-            System.out.println("error");
+
+            try {
+                con.close();
+            }catch ( Exception e1 ){
+                System.out.println(e1.getMessage());
+            }
+
+            System.out.println(e.getMessage());
         }
+        return null;
     }
+
+
+
 }
