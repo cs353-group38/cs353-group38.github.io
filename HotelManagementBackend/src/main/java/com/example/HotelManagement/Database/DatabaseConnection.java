@@ -97,6 +97,7 @@ public class DatabaseConnection {
         if (dropTable("Room_Type") == 0) {return 0;}
         if (dropTable("Reservation") == 0) {return 0;}
         if (dropTable("Comment") == 0) {return 0;}
+        if (dropTable("QnA") == 0) {return 0;}
         return 1;
     }
 
@@ -138,6 +139,7 @@ public class DatabaseConnection {
         if (createTable(CREATE_ROOM_TYPE) == 0) {return 0;}
         if (createTable(CREATE_RESERVATION) == 0) {return 0;}
         if (createTable(CREATE_COMMENT) == 0) {return 0;}
+        if (createTable(CREATE_QNA) == 0) {return 0;}
         return 1;
     }
 
@@ -163,6 +165,9 @@ public class DatabaseConnection {
             "    employment_date DATE NOT NULL,\n" +
             "    annual_leave INT NOT NULL,\n" +
             "    PRIMARY KEY (id),\n" +
+            "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
+            "        ON DELETE CASCADE \n" +
+            "        ON UPDATE CASCADE,\n" +
             "    CHECK (salary >= 0 AND id > 0 AND annual_leave > 0));";
 
     public static final String CREATE_RECEPTIONIST = "CREATE TABLE IF NOT EXISTS Receptionist(\n" +
@@ -227,7 +232,7 @@ public class DatabaseConnection {
             "    CHECK (id > 0));";
 
     /*
-    ============================ROOM TABLE DEFINITIONS============================
+    ============================ROOM TABLE DEFINITIONS============================  ADD IF NOT EXISTS
      */
     public static final String CREATE_ROOM = "CREATE TABLE Room (\n" +
             "    room_no INT,\n" +
@@ -266,5 +271,34 @@ public class DatabaseConnection {
             "        ON UPDATE CASCADE,\n" +
             "    CHECK (reservation_id > 0 AND guest_id > 0 AND check_in_date < check_out_date AND room_no > 0 AND  LENGTH(building_no) > 0) );";
 
-    public static final String CREATE_COMMENT = "Comment next";
+    public static final String CREATE_COMMENT = "CREATE TABLE Comment(\n" +
+            "    comment_id INT,\n" +
+            "    reservation_id INT NOT NULL,\n" +
+            "    text VARCHAR(5000) NOT NULL,\n" +
+            "    date DATE NOT NULL,\n" +
+            "    topic VARCHAR(50),\n" +
+            "    PRIMARY KEY (comment_id),\n" +
+            "    FOREIGN KEY (reservation_id) REFERENCES Reservation(reservation_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (comment_id > 0 AND reservation_id > 0));";
+
+    public static final String CREATE_QNA = "CREATE TABLE QnA(\n" +
+            "    thread_id INT,\n" +
+            "    guest_id INT NOT NULL,\n" +
+            "    receptionist_id INT,\n" +
+            "    question_text VARCHAR(5000) NOT NULL,\n" +
+            "    question_date DATE NOT NULL,\n" +
+            "    question_time TIME NOT NULL,\n" +
+            "    answer_text VARCHAR(5000),\n" +
+            "    answer_date DATE,\n" +
+            "    answer_time TIME,\n" +
+            "    PRIMARY KEY (thread_id),\n" +
+            "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (receptionist_id) REFERENCES Receptionist(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (thread_id > 0 AND guest_id > 0 AND receptionist_id > 0));";
 }
