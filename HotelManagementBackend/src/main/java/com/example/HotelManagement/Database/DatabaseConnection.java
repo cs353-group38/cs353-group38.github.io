@@ -79,6 +79,27 @@ public class DatabaseConnection {
         return 0;
     }
 
+    /**
+     * Drops all the tables in the database. Be careful when using this, every table will be gone.
+     * @return 1 if successful, 0 if failed
+     */
+    public int dropAllTables() {
+        if (dropTable("Users") == 0) {return 0;}
+        if (dropTable("Employee") == 0) {return 0;}
+        if (dropTable("Receptionist") == 0) {return 0;}
+        if (dropTable("Candidate") == 0) {return 0;}
+        if (dropTable("Recruiter") == 0) {return 0;}
+        if (dropTable("Security_Staff") == 0) {return 0;}
+        if (dropTable("Manager") == 0) {return 0;}
+        if (dropTable("Guests") == 0) {return 0;}
+        if (dropTable("Housekeeper") == 0) {return 0;}
+        if (dropTable("Room") == 0) {return 0;}
+        if (dropTable("Room_Type") == 0) {return 0;}
+        if (dropTable("Reservation") == 0) {return 0;}
+        if (dropTable("Comment") == 0) {return 0;}
+        return 1;
+    }
+
     /*
     ============================CREATE TABLE METHODS============================
      */
@@ -97,6 +118,27 @@ public class DatabaseConnection {
             System.out.println(e.getMessage());
         }
         return 0;
+    }
+
+    /**
+     * Initializes the database with empty tables.
+     * @return 1 for success, 0 for failure
+     */
+    public int createAllTables() {
+        if (createTable(CREATE_USERS) == 0) {return 0;}
+        if (createTable(CREATE_EMPLOYEE) == 0) {return 0;}
+        if (createTable(CREATE_RECEPTIONIST) == 0) {return 0;}
+        if (createTable(CREATE_CANDIDATE) == 0) {return 0;}
+        if (createTable(CREATE_RECRUITER) == 0) {return 0;}
+        if (createTable(CREATE_SECURITY_STAFF) == 0) {return 0;}
+        if (createTable(CREATE_MANAGER) == 0) {return 0;}
+        if (createTable(CREATE_GUESTS) == 0) {return 0;}
+        if (createTable(CREATE_HOUSEKEEPER) == 0) {return 0;}
+        if (createTable(CREATE_ROOM) == 0) {return 0;}
+        if (createTable(CREATE_ROOM_TYPE) == 0) {return 0;}
+        if (createTable(CREATE_RESERVATION) == 0) {return 0;}
+        if (createTable(CREATE_COMMENT) == 0) {return 0;}
+        return 1;
     }
 
     /*
