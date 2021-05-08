@@ -10,7 +10,7 @@ public class HotelManagementApplication {
 	public static void main(String[] args) {
 		//These are for test purposes, will be deleted later
 		DatabaseConnection databaseConnection = new DatabaseConnection();
-		databaseConnection.dropAllTables();
+		//databaseConnection.dropAllTables();
 		databaseConnection.createAllTables();
 		//--------------------------------------------------
 		SpringApplication.run(HotelManagementApplication.class, args);

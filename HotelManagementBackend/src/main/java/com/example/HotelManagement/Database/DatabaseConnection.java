@@ -68,7 +68,7 @@ public class DatabaseConnection {
      * @return 1 if successful, 0 if failure
      */
     public int dropTable(String tableName) {
-        String update = "DROP TABLE IF EXISTS " + tableName + ";";
+        String update = "DROP TABLE IF EXISTS " + tableName + " CASCADE;";
         try {
             execute(update, UPDATE);
             System.out.println("Dropped " + tableName + ".");
@@ -85,6 +85,19 @@ public class DatabaseConnection {
      * @return 1 if successful, 0 if failed
      */
     public int dropAllTables() {
+        if (dropTable("Leave_Request_Form") == 0) {return 0;}
+        if (dropTable("Security_Report") == 0) {return 0;}
+        if (dropTable("Job_Application") == 0) {return 0;}
+        if (dropTable("Food_Drink") == 0) {return 0;}
+        if (dropTable("Restaurant") == 0) {return 0;}
+        if (dropTable("Food_Order") == 0) {return 0;}
+        if (dropTable("Tourist_Attraction") == 0) {return 0;}
+        if (dropTable("Ticket") == 0) {return 0;}
+        if (dropTable("Training_Program") == 0) {return 0;}
+        if (dropTable("Group_Tours") == 0) {return 0;}
+        if (dropTable("Activity") == 0) {return 0;}
+        if (dropTable("Guest_Activity") == 0) {return 0;}
+        if (dropTable("Event") == 0) {return 0;}
         if (dropTable("Receptionist") == 0) {return 0;}
         if (dropTable("Security_Staff") == 0) {return 0;}
         if (dropTable("Manager") == 0) {return 0;}
@@ -93,7 +106,6 @@ public class DatabaseConnection {
         if (dropTable("Employee") == 0) {return 0;}
         if (dropTable("Candidate") == 0) {return 0;}
         if (dropTable("Guests") == 0) {return 0;}
-        if (dropTable("Users") == 0) {return 0;}
         if (dropTable("Room") == 0) {return 0;}
         if (dropTable("Room_Type") == 0) {return 0;}
         if (dropTable("Reservation") == 0) {return 0;}
@@ -101,6 +113,7 @@ public class DatabaseConnection {
         if (dropTable("QnA") == 0) {return 0;}
         if (dropTable("Building") == 0) {return 0;}
         if (dropTable("Location") == 0) {return 0;}
+        if (dropTable("Users") == 0) {return 0;}
         return 1;
     }
 
@@ -145,6 +158,19 @@ public class DatabaseConnection {
         if (createTable(CREATE_RESERVATION) == 0) {return 0;}
         if (createTable(CREATE_COMMENT) == 0) {return 0;}
         if (createTable(CREATE_QNA) == 0) {return 0;}
+        if (createTable(CREATE_EVENT) == 0) {return 0;}
+        if (createTable(CREATE_GUEST_ACTIVITY) == 0) {return 0;}
+        if (createTable(CREATE_ACTIVITY) == 0) {return 0;}
+        if (createTable(CREATE_GROUP_TOURS) == 0) {return 0;}
+        if (createTable(CREATE_TRAINING_PROGRAM) == 0) {return 0;}
+        if (createTable(CREATE_TICKET) == 0) {return 0;}
+        if (createTable(CREATE_TOURIST_ATTRACTION) == 0) {return 0;}
+        if (createTable(CREATE_FOOD_ORDER) == 0) {return 0;}
+        if (createTable(CREATE_RESTAURANT) == 0) {return 0;}
+        if (createTable(CREATE_FOOD_DRINK) == 0) {return 0;}
+        if (createTable(CREATE_JOB_APPLICATION) == 0) {return 0;}
+        if (createTable(CREATE_SECURITY_REPORT) == 0) {return 0;}
+        if (createTable(CREATE_LEAVE_REQUEST_FORM) == 0) {return 0;}
         return 1;
     }
 
@@ -332,6 +358,185 @@ public class DatabaseConnection {
             "    min_age INT,\n" +
             "    PRIMARY KEY (name),\n" +
             "    CHECK ( CHAR_LENGTH(name) > 0 AND opening < closing AND min_age > 0)) ENGINE=InnoDB;";
+
+    /*
+    ============================EVENT TABLE DEFINITIONS============================
+     */
+
+    public static final String CREATE_EVENT = "CREATE TABLE IF NOT EXISTS Event(\n" +
+            "    event_id INT,\n" +
+            "    event_name VARCHAR(50) NOT NULL,\n" +
+            "    location_name VARCHAR(50) NOT NULL,\n" +
+            "    start_date DATE NOT NULL,\n" +
+            "    start_hour TIME NOT NULL,\n" +
+            "    end_date DATE NOT NULL,\n" +
+            "    end_hour TIME NOT NULL,\n" +
+            "    min_age INT,\n" +
+            "    quota INT,\n" +
+            "    description VARCHAR(3000),\n" +
+            "    manager_id INT NOT NULL,\n" +
+            "    PRIMARY KEY (event_id),\n" +
+            "    FOREIGN KEY (location_name) REFERENCES Location(name)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK((event_id > 0) AND ((start_date < end_date) OR (start_date = end_date AND start_hour < end_hour)))) ENGINE=InnoDB;";
+
+    public static final String CREATE_GUEST_ACTIVITY = "CREATE TABLE IF NOT EXISTS Guest_Activity(\n" +
+            "    event_id INT,\n" +
+            "    price NUMERIC (18, 2) NOT NULL,\n" +
+            "    PRIMARY KEY (event_id),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Event(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (event_id > 0 AND price >= 0.0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_ACTIVITY = "CREATE TABLE IF NOT EXISTS Activity(\n" +
+            "    event_id INT,\n" +
+            "    PRIMARY KEY (event_id),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Guest_Activity(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (event_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_GROUP_TOURS = "CREATE TABLE IF NOT EXISTS Group_Tours(\n" +
+            "    event_id INT,\n" +
+            "    organizer_name VARCHAR(50) NOT NULL,\n" +
+            "    tour_vehicle VARCHAR(20),\n" +
+            "    distance_to_cover INT NOT NULL,\n" +
+            "    PRIMARY KEY (event_id),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Guest_Activity(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (event_id > 0 AND distance_to_cover > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_TRAINING_PROGRAM = "CREATE TABLE IF NOT EXISTS Training_Program(\n" +
+            "    event_id INT,\n" +
+            "    PRIMARY KEY (event_id),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Event(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (event_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_TICKET = "CREATE TABLE IF NOT EXISTS Ticket(\n" +
+            "    ticket_id INT,\n" +
+            "    event_id INT NOT NULL,\n" +
+            "    guest_id INT NOT NULL,\n" +
+            "    PRIMARY KEY(ticket_id),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Guest_Activity(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (ticket_id > 0 AND event_id > 0 AND guest_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_TOURIST_ATTRACTION = "CREATE TABLE IF NOT EXISTS Tourist_Attraction(\n" +
+            "    name VARCHAR(50),\n" +
+            "    visits_per_day INT NOT NULL,\n" +
+            "    PRIMARY KEY (name),\n" +
+            "    CHECK (visits_per_day >= 0)) ENGINE=InnoDB;";
+
+    /*
+    ============================FOOD TABLE DEFINITIONS============================
+     */
+
+    public static final String CREATE_FOOD_DRINK = "CREATE TABLE IF NOT EXISTS Food_Drink(\n" +
+            "    food_id INT,\n" +
+            "    name VARCHAR(50) NOT NULL,\n" +
+            "    type VARCHAR(20),\n" +
+            "    no_in_stock INT NOT NULL,\n" +
+            "    price NUMERIC(18, 2) NOT NULL,\n" +
+            "    calorie INT,\n" +
+            "    restaurant_id INT NOT NULL,\n" +
+            "    PRIMARY KEY (food_id),\n" +
+            "    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (food_id > 0 AND no_in_stock >= 0 AND price >= 0 AND restaurant_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_FOOD_ORDER = "CREATE TABLE IF NOT EXISTS Food_Order(\n" +
+            "    order_id INT,\n" +
+            "    rating INT,\n" +
+            "    comment VARCHAR(1000),\n" +
+            "    guest_id INT NOT NULL,\n" +
+            "    manager_id INT,\n" +
+            "    housekeeper_id INT,\n" +
+            "    assign_time TIMESTAMP NOT NULL,\n" +
+            "    delivery_time TIMESTAMP,\n" +
+            "    status VARCHAR(20),\n" +
+            "    PRIMARY KEY (order_id),\n" +
+            "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (order_id > 0 AND guest_id > 0 AND assign_time <= CURRENT_TIMESTAMP())) ENGINE=InnoDB;";
+
+    public static final String CREATE_RESTAURANT = "CREATE TABLE IF NOT EXISTS Restaurant(\n" +
+            "    restaurant_id INT,\n" +
+            "    location_name VARCHAR(50) NOT NULL,\n" +
+            "    name VARCHAR(50) NOT NULL,\n" +
+            "    type VARCHAR(20),\n" +
+            "    hours_opening TIME,\n" +
+            "    hours_closing TIME,\n" +
+            "    PRIMARY KEY (restaurant_id),\n" +
+            "    FOREIGN KEY (location_name) REFERENCES Location(name)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (restaurant_id > 0 AND CHAR_LENGTH(location_name) > 0)) ENGINE=InnoDB;";
+
+    /*
+    ============================EMPLOYEE STUFF TABLE DEFINITIONS============================
+     */
+
+    public static final String CREATE_JOB_APPLICATION = "CREATE TABLE IF NOT EXISTS Job_Application (\n" +
+            "    id INT,\n" +
+            "    position VARCHAR(50),\n" +
+            "    status VARCHAR(20) NOT NULL,\n" +
+            "    PRIMARY KEY (id, position),\n" +
+            "    FOREIGN KEY (id) REFERENCES Candidate(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_SECURITY_REPORT = "CREATE TABLE IF NOT EXISTS Security_Report(\n" +
+            "    report_id INT,\n" +
+            "    message VARCHAR(1000) NOT NULL,\n" +
+            "    date DATE NOT NULL,\n" +
+            "    time TIME NOT NULL,\n" +
+            "    security_staff_id INT NOT NULL,\n" +
+            "    PRIMARY KEY (report_id),\n" +
+            "    FOREIGN KEY (security_staff_id) REFERENCES Security_Staff(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (report_id > 0 AND security_staff_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_LEAVE_REQUEST_FORM = "CREATE TABLE IF NOT EXISTS Leave_Request_Form(\n" +
+            "    id INT,\n" +
+            "    leave_date DATE,\n" +
+            "    days INT NOT NULL,\n" +
+            "    manager_id INT,\n" +
+            "    approve_date DATE,\n" +
+            "    status VARCHAR(20) NOT NULL,\n" +
+            "    PRIMARY KEY (id, leave_date),\n" +
+            "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (leave_date >= CURDATE() AND id > 0 AND days > 0)) ENGINE=InnoDB;";
+
+    /*
+    ============================RELATIONSHIP TABLE DEFINITIONS============================
+     */
 
 
 }
