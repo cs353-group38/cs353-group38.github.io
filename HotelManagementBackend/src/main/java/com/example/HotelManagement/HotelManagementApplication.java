@@ -11,7 +11,7 @@ public class HotelManagementApplication {
 		//These are for test purposes, will be deleted later
 		DatabaseConnection databaseConnection = new DatabaseConnection();
 		//databaseConnection.dropAllTables();
-		databaseConnection.createAllTables();
+		//databaseConnection.createAllTables();
 		//--------------------------------------------------
 		SpringApplication.run(HotelManagementApplication.class, args);
 	}
