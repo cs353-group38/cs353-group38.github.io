@@ -13,6 +13,7 @@ public class HotelManagementApplication {
 		//databaseConnection.dropAllTables();
 		//databaseConnection.createAllTables();
 		//--------------------------------------------------
+		System.out.println(Math.random());
 		SpringApplication.run(HotelManagementApplication.class, args);
 	}
 
