@@ -71,6 +71,7 @@ public class DatabaseConnection {
         String update = "DROP TABLE IF EXISTS " + tableName + ";";
         try {
             execute(update, UPDATE);
+            System.out.println("Dropped " + tableName + ".");
             return 1;
         }
         catch (Exception e) {
@@ -84,20 +85,22 @@ public class DatabaseConnection {
      * @return 1 if successful, 0 if failed
      */
     public int dropAllTables() {
-        if (dropTable("Users") == 0) {return 0;}
-        if (dropTable("Employee") == 0) {return 0;}
         if (dropTable("Receptionist") == 0) {return 0;}
-        if (dropTable("Candidate") == 0) {return 0;}
-        if (dropTable("Recruiter") == 0) {return 0;}
         if (dropTable("Security_Staff") == 0) {return 0;}
         if (dropTable("Manager") == 0) {return 0;}
-        if (dropTable("Guests") == 0) {return 0;}
         if (dropTable("Housekeeper") == 0) {return 0;}
+        if (dropTable("Recruiter") == 0) {return 0;}
+        if (dropTable("Employee") == 0) {return 0;}
+        if (dropTable("Candidate") == 0) {return 0;}
+        if (dropTable("Guests") == 0) {return 0;}
+        if (dropTable("Users") == 0) {return 0;}
         if (dropTable("Room") == 0) {return 0;}
         if (dropTable("Room_Type") == 0) {return 0;}
         if (dropTable("Reservation") == 0) {return 0;}
         if (dropTable("Comment") == 0) {return 0;}
         if (dropTable("QnA") == 0) {return 0;}
+        if (dropTable("Building") == 0) {return 0;}
+        if (dropTable("Location") == 0) {return 0;}
         return 1;
     }
 
@@ -135,8 +138,10 @@ public class DatabaseConnection {
         if (createTable(CREATE_MANAGER) == 0) {return 0;}
         if (createTable(CREATE_GUESTS) == 0) {return 0;}
         if (createTable(CREATE_HOUSEKEEPER) == 0) {return 0;}
-        if (createTable(CREATE_ROOM) == 0) {return 0;}
+        if (createTable(CREATE_LOCATION) == 0) {return 0;}
+        if (createTable(CREATE_BUILDING) == 0) {return 0;}
         if (createTable(CREATE_ROOM_TYPE) == 0) {return 0;}
+        if (createTable(CREATE_ROOM) == 0) {return 0;}
         if (createTable(CREATE_RESERVATION) == 0) {return 0;}
         if (createTable(CREATE_COMMENT) == 0) {return 0;}
         if (createTable(CREATE_QNA) == 0) {return 0;}
@@ -157,7 +162,7 @@ public class DatabaseConnection {
             "                      gender VARCHAR(20),\n" +
             "                      date_of_birth DATE,\n" +
             "                      PRIMARY KEY (id),\n" +
-            "                      CHECK (date_of_birth < CURDATE() AND id > 0 ) );";
+            "                      CHECK (date_of_birth < CURDATE() AND id > 0 ) ) ENGINE=InnoDB;";
 
     public static final String CREATE_EMPLOYEE = "CREATE TABLE IF NOT EXISTS Employee(\n" +
             "    id INT,\n" +
@@ -168,7 +173,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
             "        ON DELETE CASCADE \n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (salary >= 0 AND id > 0 AND annual_leave > 0));";
+            "    CHECK (salary >= 0 AND id > 0 AND annual_leave > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_RECEPTIONIST = "CREATE TABLE IF NOT EXISTS Receptionist(\n" +
             "    id INT,\n" +
@@ -176,7 +181,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0));";
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_CANDIDATE = "CREATE TABLE IF NOT EXISTS Candidate(\n" +
             "    id INT,\n" +
@@ -185,7 +190,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0));";
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_RECRUITER = "CREATE TABLE IF NOT EXISTS Recruiter(\n" +
             "    id INT,\n" +
@@ -193,7 +198,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0));";
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_SECURITY_STAFF = "CREATE TABLE IF NOT EXISTS Security_Staff(\n" +
             "    id INT,\n" +
@@ -203,7 +208,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0));";
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_MANAGER = "CREATE TABLE IF NOT EXISTS Manager(\n" +
             "    id INT,\n" +
@@ -212,7 +217,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0) );";
+            "    CHECK (id > 0) ) ENGINE=InnoDB;";
 
     public static final String CREATE_GUESTS = "CREATE TABLE IF NOT EXISTS Guests(\n" +
             "    id INT,\n" +
@@ -221,7 +226,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0 AND money_spent > 0));";
+            "    CHECK (id > 0 AND money_spent > 0)) ENGINE=InnoDB;";
 
     public static final String CREATE_HOUSEKEEPER = "CREATE TABLE IF NOT EXISTS Housekeeper(\n" +
             "    id INT,\n" +
@@ -229,12 +234,12 @@ public class DatabaseConnection {
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (id > 0));";
+            "    CHECK (id > 0)) ENGINE=InnoDB;";
 
     /*
-    ============================ROOM TABLE DEFINITIONS============================  ADD IF NOT EXISTS
+    ============================ROOM TABLE DEFINITIONS============================
      */
-    public static final String CREATE_ROOM = "CREATE TABLE Room (\n" +
+    public static final String CREATE_ROOM = "CREATE TABLE IF NOT EXISTS Room (\n" +
             "    room_no INT,\n" +
             "    building_no VARCHAR(50),\n" +
             "    type VARCHAR(50) NOT NULL,\n" +
@@ -246,16 +251,16 @@ public class DatabaseConnection {
             "    FOREIGN KEY (building_no) REFERENCES Building(building_no)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (room_no > 0 AND  LENGTH(building_no) > 0 AND LENGTH(type) > 0));";      //LENGTH(type) produces warning
+            "    CHECK (room_no > 0 AND  LENGTH(building_no) > 0 AND LENGTH(type) > 0)) ENGINE=InnoDB;";      //LENGTH(type) produces warning
 
-    public static final String CREATE_ROOM_TYPE = "CREATE TABLE Room_Type (\n" +
+    public static final String CREATE_ROOM_TYPE = "CREATE TABLE IF NOT EXISTS Room_Type (\n" +
             "    type VARCHAR(50),\n" +
             "    price NUMERIC(18, 2) NOT NULL,\n" +
             "    no_of_people INT NOT NULL,\n" +
             "    PRIMARY KEY (type),\n" +
-            "    CHECK (LENGTH(type) > 0));";   //LENGTH(type) produces warning
+            "    CHECK (LENGTH(type) > 0)) ENGINE=InnoDB;";   //LENGTH(type) produces warning
 
-    public static final String CREATE_RESERVATION = "CREATE TABLE Reservation(\n" +
+    public static final String CREATE_RESERVATION = "CREATE TABLE IF NOT EXISTS Reservation(\n" +
             "    reservation_id INT,\n" +
             "    guest_id INT NOT NULL,\n" +
             "    room_no INT,\n" +
@@ -269,9 +274,9 @@ public class DatabaseConnection {
             "    FOREIGN KEY (room_no,building_no) REFERENCES Room(room_no, building_no)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (reservation_id > 0 AND guest_id > 0 AND check_in_date < check_out_date AND room_no > 0 AND  LENGTH(building_no) > 0) );";
+            "    CHECK (reservation_id > 0 AND guest_id > 0 AND check_in_date < check_out_date AND room_no > 0 AND  LENGTH(building_no) > 0) ) ENGINE=InnoDB;";
 
-    public static final String CREATE_COMMENT = "CREATE TABLE Comment(\n" +
+    public static final String CREATE_COMMENT = "CREATE TABLE IF NOT EXISTS Comment(\n" +
             "    comment_id INT,\n" +
             "    reservation_id INT NOT NULL,\n" +
             "    text VARCHAR(5000) NOT NULL,\n" +
@@ -281,9 +286,9 @@ public class DatabaseConnection {
             "    FOREIGN KEY (reservation_id) REFERENCES Reservation(reservation_id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (comment_id > 0 AND reservation_id > 0));";
+            "    CHECK (comment_id > 0 AND reservation_id > 0)) ENGINE=InnoDB;";
 
-    public static final String CREATE_QNA = "CREATE TABLE QnA(\n" +
+    public static final String CREATE_QNA = "CREATE TABLE IF NOT EXISTS QnA(\n" +
             "    thread_id INT,\n" +
             "    guest_id INT NOT NULL,\n" +
             "    receptionist_id INT,\n" +
@@ -300,5 +305,33 @@ public class DatabaseConnection {
             "    FOREIGN KEY (receptionist_id) REFERENCES Receptionist(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (thread_id > 0 AND guest_id > 0 AND receptionist_id > 0));";
+            "    CHECK (thread_id > 0 AND guest_id > 0 AND receptionist_id > 0)) ENGINE=InnoDB;";
+
+    /*
+    ============================PLACE TABLE DEFINITIONS============================
+     */
+
+    public static final String CREATE_BUILDING = "CREATE TABLE IF NOT EXISTS Building(\n" +
+            "    building_no VARCHAR(50),\n" +
+            "    location_name VARCHAR(50) NOT NULL,\n" +
+            "    name VARCHAR(50) NOT NULL,\n" +
+            "    no_of_rooms INT NOT NULL,\n" +
+            "    no_of_floors INT NOT NULL,\n" +
+            "    area INT NOT NULL,\n" +
+            "    type VARCHAR(50) NOT NULL,\n" +
+            "    PRIMARY KEY (building_no),\n" +
+            "    FOREIGN KEY (location_name) REFERENCES Location(name)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (no_of_rooms > 0 AND no_of_floors > 0 AND area > 0 AND  CHAR_LENGTH(building_no) > 0 AND CHAR_LENGTH(location_name) > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_LOCATION = "CREATE TABLE IF NOT EXISTS Location(\n" +
+            "    name VARCHAR(50),\n" +
+            "    opening TIME,\n" +
+            "    closing TIME,\n" +
+            "    min_age INT,\n" +
+            "    PRIMARY KEY (name),\n" +
+            "    CHECK ( CHAR_LENGTH(name) > 0 AND opening < closing AND min_age > 0)) ENGINE=InnoDB;";
+
+
 }

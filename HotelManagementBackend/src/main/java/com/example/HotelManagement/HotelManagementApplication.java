@@ -8,17 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HotelManagementApplication {
 
 	public static void main(String[] args) {
+		//These are for test purposes, will be deleted later
 		DatabaseConnection databaseConnection = new DatabaseConnection();
-		/*
-		databaseConnection.createTable(DatabaseConnection.CREATE_EMPLOYEE);
-		databaseConnection.createTable(DatabaseConnection.CREATE_RECEPTIONIST);
-		databaseConnection.createTable(DatabaseConnection.CREATE_CANDIDATE);
-		databaseConnection.createTable(DatabaseConnection.CREATE_RECRUITER);
-		databaseConnection.createTable(DatabaseConnection.CREATE_SECURITY_STAFF);
-		databaseConnection.createTable(DatabaseConnection.CREATE_MANAGER);
-		databaseConnection.createTable(DatabaseConnection.CREATE_GUESTS);
-		databaseConnection.createTable(DatabaseConnection.CREATE_HOUSEKEEPER);
-		*/
+		databaseConnection.dropAllTables();
+		databaseConnection.createAllTables();
+		//--------------------------------------------------
 		SpringApplication.run(HotelManagementApplication.class, args);
 	}
 
