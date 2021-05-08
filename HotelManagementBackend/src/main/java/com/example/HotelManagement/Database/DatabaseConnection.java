@@ -85,6 +85,15 @@ public class DatabaseConnection {
      * @return 1 if successful, 0 if failed
      */
     public int dropAllTables() {
+        if (dropTable("Cleaning_Duty") == 0) {return 0;}
+        if (dropTable("Security_Walk") == 0) {return 0;}
+        if (dropTable("Approves") == 0) {return 0;}
+        if (dropTable("Evaluates_HK_Application") == 0) {return 0;}
+        if (dropTable("Evaluates_Sec_Staff_Application") == 0) {return 0;}
+        if (dropTable("HK_Applies_To") == 0) {return 0;}
+        if (dropTable("Sec_Staff_Applies_To") == 0) {return 0;}
+        if (dropTable("Places_To_Visit") == 0) {return 0;}
+        if (dropTable("Order_Contains") == 0) {return 0;}
         if (dropTable("Leave_Request_Form") == 0) {return 0;}
         if (dropTable("Security_Report") == 0) {return 0;}
         if (dropTable("Job_Application") == 0) {return 0;}
@@ -171,6 +180,15 @@ public class DatabaseConnection {
         if (createTable(CREATE_JOB_APPLICATION) == 0) {return 0;}
         if (createTable(CREATE_SECURITY_REPORT) == 0) {return 0;}
         if (createTable(CREATE_LEAVE_REQUEST_FORM) == 0) {return 0;}
+        if (createTable(CREATE_ORDER_CONTAINS) == 0) {return 0;}
+        if (createTable(CREATE_PLACES_TO_VISIT) == 0) {return 0;}
+        if (createTable(CREATE_SEC_STAFF_APPLIES_TO) == 0) {return 0;}
+        if (createTable(CREATE_HK_APPLIES_TO) == 0) {return 0;}
+        if (createTable(CREATE_EVALUATES_SEC_STAFF_APPLICATION) == 0) {return 0;}
+        if (createTable(CREATE_EVALUATES_HK_APPLICATION) == 0) {return 0;}
+        if (createTable(CREATE_APPROVES) == 0) {return 0;}
+        if (createTable(CREATE_SECURITY_WALK) == 0) {return 0;}
+        if (createTable(CREATE_CLEANING_DUTY) == 0) {return 0;}
         return 1;
     }
 
@@ -538,5 +556,131 @@ public class DatabaseConnection {
     ============================RELATIONSHIP TABLE DEFINITIONS============================
      */
 
+    public static final String CREATE_ORDER_CONTAINS = "CREATE TABLE IF NOT EXISTS Order_Contains(\n" +
+            "    order_id INT,\n" +
+            "    food_id INT,\n" +
+            "    PRIMARY KEY (order_id, food_id),\n" +
+            "    FOREIGN KEY (order_id) REFERENCES Food_Order(order_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (food_id) REFERENCES Food_Drink(food_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (order_id > 0 AND food_id > 0)) ENGINE=InnoDB;";
 
+    public static final String CREATE_PLACES_TO_VISIT = "CREATE TABLE IF NOT EXISTS Places_To_Visit(\n" +
+            "    event_id INT,\n" +
+            "    attraction_name VARCHAR(50),\n" +
+            "    PRIMARY KEY (event_id, attraction_name),\n" +
+            "    FOREIGN KEY (event_id) REFERENCES Group_Tours(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (attraction_name) REFERENCES Tourist_Attraction(name)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (event_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_SEC_STAFF_APPLIES_TO = "CREATE TABLE IF NOT EXISTS Sec_Staff_Applies_To(\n" +
+            "    sec_staff_id INT,\n" +
+            "    training_program_id INT,\n" +
+            "    PRIMARY KEY (sec_staff_id, training_program_id),\n" +
+            "    FOREIGN KEY (training_program_id) REFERENCES Training_Program(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (sec_staff_id) REFERENCES Security_Staff(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (training_program_id > 0 AND sec_staff_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_HK_APPLIES_TO = "CREATE TABLE IF NOT EXISTS HK_Applies_To(\n" +
+            "    housekeeper_id INT,\n" +
+            "    training_program_id INT,\n" +
+            "    PRIMARY KEY (housekeeper_id, training_program_id),\n" +
+            "    FOREIGN KEY (training_program_id) REFERENCES Training_Program(event_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (training_program_id > 0 AND housekeeper_id> 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_EVALUATES_SEC_STAFF_APPLICATION = "CREATE TABLE IF NOT EXISTS Evaluates_Sec_Staff_Application(\n" +
+            "    sec_staff_id INT,\n" +
+            "    training_program_id INT,\n" +
+            "    manager_id INT,\n" +
+            "    application_status VARCHAR(50),\n" +
+            "    PRIMARY KEY (sec_staff_id, training_program_id),\n" +
+            "    FOREIGN KEY (sec_staff_id, training_program_id) REFERENCES Sec_Staff_Applies_To (sec_staff_id, training_program_id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (training_program_id > 0 AND sec_staff_id > 0 AND manager_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_EVALUATES_HK_APPLICATION = "CREATE TABLE IF NOT EXISTS Evaluates_HK_Application(\n" +
+            "    housekeeper_id INT,\n" +
+            "    training_program_id INT,\n" +
+            "    manager_id INT,\n" +
+            "    application_status VARCHAR(50),\n" +
+            "    PRIMARY KEY (housekeeper_id, training_program_id),\n" +
+            "    FOREIGN KEY (housekeeper_id, training_program_id) REFERENCES HK_Applies_To(housekeeper_id, training_program_id)\n" +
+            "        ON DELETE CASCADE \n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (housekeeper_id > 0 AND training_program_id > 0 AND manager_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_APPROVES = "CREATE TABLE IF NOT EXISTS Approves(\n" +
+            "    candidate_id INT,\n" +
+            "    position VARCHAR(50),\n" +
+            "    recruiter_id INT,\n" +
+            "    PRIMARY KEY (candidate_id, position),\n" +
+            "    FOREIGN KEY (candidate_id, position) REFERENCES Job_Application(id, position)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (recruiter_id) REFERENCES Recruiter(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (candidate_id > 0 AND recruiter_id > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_SECURITY_WALK = "CREATE TABLE IF NOT EXISTS Security_Walk(\n" +
+            "    manager_id INT,\n" +
+            "    security_staff_id INT,\n" +
+            "    building_no VARCHAR(50),\n" +
+            "    date DATE,\n" +
+            "    start_hour TIME,\n" +
+            "    end_hour TIME,\n" +
+            "    PRIMARY KEY (manager_id, security_staff_id, building_no, date, start_hour, end_hour),\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (security_staff_id) REFERENCES Security_Staff(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (building_no) REFERENCES Building(building_no)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (manager_id > 0 AND security_staff_id > 0 AND CHAR_LENGTH(building_no) > 0)) ENGINE=InnoDB;";
+
+    public static final String CREATE_CLEANING_DUTY = "CREATE TABLE IF NOT EXISTS Cleaning_Duty(\n" +
+            "    housekeeper_id INT,\n" +
+            "    room_no INT,\n" +
+            "    building_no VARCHAR(50),\n" +
+            "    date DATE,\n" +
+            "    time TIME,\n" +
+            "    status VARCHAR(20) NOT NULL,\n" +
+            "    manager_id INT NOT NULL,\n" +
+            "    PRIMARY KEY (housekeeper_id, room_no, building_no, date),\n" +
+            "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (room_no, building_no) REFERENCES Room(room_no, building_no)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
+            "        ON DELETE CASCADE\n" +
+            "        ON UPDATE CASCADE,\n" +
+            "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND CURDATE() <= date AND  CURTIME() <= time)) ENGINE=InnoDB;";
 }
