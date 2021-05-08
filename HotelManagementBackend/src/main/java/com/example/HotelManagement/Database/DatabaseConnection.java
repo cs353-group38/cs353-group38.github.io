@@ -204,14 +204,14 @@ public class DatabaseConnection {
             "                      phone VARCHAR(20),\n" +
             "                      address VARCHAR(100),\n" +
             "                      gender VARCHAR(20),\n" +
-            "                      date_of_birth DATE,\n" +
+            "                      date_of_birth LONG,\n" +
             "                      PRIMARY KEY (id),\n" +
-            "                      CHECK (date_of_birth < CURDATE() AND id > 0 ) ) ENGINE=InnoDB;";
+            "                      CHECK (date_of_birth < UNIX_TIMESTAMP() AND id > 0 ) ) ENGINE=InnoDB;";
 
     public static final String CREATE_EMPLOYEE = "CREATE TABLE IF NOT EXISTS Employee(\n" +
             "    id INT,\n" +
             "    salary NUMERIC(18, 2) NOT NULL,\n" +
-            "    employment_date DATE NOT NULL,\n" +
+            "    employment_date LONG NOT NULL,\n" +
             "    annual_leave INT NOT NULL,\n" +
             "    PRIMARY KEY (id),\n" +
             "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
@@ -309,8 +309,8 @@ public class DatabaseConnection {
             "    guest_id INT NOT NULL,\n" +
             "    room_no INT,\n" +
             "    building_no VARCHAR(50),\n" +
-            "    check_in_date DATE NOT NULL,\n" +
-            "    check_out_date DATE NOT NULL,\n" +
+            "    check_in_date LONG NOT NULL,\n" +
+            "    check_out_date LONG NOT NULL,\n" +
             "    PRIMARY KEY (reservation_id),\n" +
             "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
             "        ON DELETE CASCADE\n" +
@@ -324,7 +324,7 @@ public class DatabaseConnection {
             "    comment_id INT,\n" +
             "    reservation_id INT NOT NULL,\n" +
             "    text VARCHAR(5000) NOT NULL,\n" +
-            "    date DATE NOT NULL,\n" +
+            "    date LONG NOT NULL,\n" +
             "    topic VARCHAR(50),\n" +
             "    PRIMARY KEY (comment_id),\n" +
             "    FOREIGN KEY (reservation_id) REFERENCES Reservation(reservation_id)\n" +
@@ -337,11 +337,9 @@ public class DatabaseConnection {
             "    guest_id INT NOT NULL,\n" +
             "    receptionist_id INT,\n" +
             "    question_text VARCHAR(5000) NOT NULL,\n" +
-            "    question_date DATE NOT NULL,\n" +
-            "    question_time TIME NOT NULL,\n" +
+            "    question_date LONG NOT NULL,\n" +
             "    answer_text VARCHAR(5000),\n" +
-            "    answer_date DATE,\n" +
-            "    answer_time TIME,\n" +
+            "    answer_date LONG,\n" +
             "    PRIMARY KEY (thread_id),\n" +
             "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
             "        ON DELETE CASCADE\n" +
@@ -371,8 +369,8 @@ public class DatabaseConnection {
 
     public static final String CREATE_LOCATION = "CREATE TABLE IF NOT EXISTS Location(\n" +
             "    name VARCHAR(50),\n" +
-            "    opening TIME,\n" +
-            "    closing TIME,\n" +
+            "    opening LONG,\n" +
+            "    closing LONG,\n" +
             "    min_age INT,\n" +
             "    PRIMARY KEY (name),\n" +
             "    CHECK ( CHAR_LENGTH(name) > 0 AND opening < closing AND min_age > 0)) ENGINE=InnoDB;";
@@ -385,10 +383,8 @@ public class DatabaseConnection {
             "    event_id INT,\n" +
             "    event_name VARCHAR(50) NOT NULL,\n" +
             "    location_name VARCHAR(50) NOT NULL,\n" +
-            "    start_date DATE NOT NULL,\n" +
-            "    start_hour TIME NOT NULL,\n" +
-            "    end_date DATE NOT NULL,\n" +
-            "    end_hour TIME NOT NULL,\n" +
+            "    start_date LONG NOT NULL,\n" +
+            "    end_date LONG NOT NULL,\n" +
             "    min_age INT,\n" +
             "    quota INT,\n" +
             "    description VARCHAR(3000),\n" +
@@ -400,7 +396,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK((event_id > 0) AND ((start_date < end_date) OR (start_date = end_date AND start_hour < end_hour)))) ENGINE=InnoDB;";
+            "    CHECK((event_id > 0) AND (start_date < end_date))) ENGINE=InnoDB;";
 
     public static final String CREATE_GUEST_ACTIVITY = "CREATE TABLE IF NOT EXISTS Guest_Activity(\n" +
             "    event_id INT,\n" +
@@ -482,8 +478,8 @@ public class DatabaseConnection {
             "    guest_id INT NOT NULL,\n" +
             "    manager_id INT,\n" +
             "    housekeeper_id INT,\n" +
-            "    assign_time TIMESTAMP NOT NULL,\n" +
-            "    delivery_time TIMESTAMP,\n" +
+            "    assign_time LONG NOT NULL,\n" +
+            "    delivery_time LONG,\n" +
             "    status VARCHAR(20),\n" +
             "    PRIMARY KEY (order_id),\n" +
             "    FOREIGN KEY (guest_id) REFERENCES Guests(id)\n" +
@@ -495,15 +491,15 @@ public class DatabaseConnection {
             "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (order_id > 0 AND guest_id > 0 AND assign_time <= CURRENT_TIMESTAMP())) ENGINE=InnoDB;";
+            "    CHECK (order_id > 0 AND guest_id > 0 AND assign_time <= UNIX_TIMESTAMP())) ENGINE=InnoDB;";
 
     public static final String CREATE_RESTAURANT = "CREATE TABLE IF NOT EXISTS Restaurant(\n" +
             "    restaurant_id INT,\n" +
             "    location_name VARCHAR(50) NOT NULL,\n" +
             "    name VARCHAR(50) NOT NULL,\n" +
             "    type VARCHAR(20),\n" +
-            "    hours_opening TIME,\n" +
-            "    hours_closing TIME,\n" +
+            "    hours_opening LONG,\n" +
+            "    hours_closing LONG,\n" +
             "    PRIMARY KEY (restaurant_id),\n" +
             "    FOREIGN KEY (location_name) REFERENCES Location(name)\n" +
             "        ON DELETE CASCADE\n" +
@@ -527,8 +523,7 @@ public class DatabaseConnection {
     public static final String CREATE_SECURITY_REPORT = "CREATE TABLE IF NOT EXISTS Security_Report(\n" +
             "    report_id INT,\n" +
             "    message VARCHAR(1000) NOT NULL,\n" +
-            "    date DATE NOT NULL,\n" +
-            "    time TIME NOT NULL,\n" +
+            "    date LONG NOT NULL,\n" +
             "    security_staff_id INT NOT NULL,\n" +
             "    PRIMARY KEY (report_id),\n" +
             "    FOREIGN KEY (security_staff_id) REFERENCES Security_Staff(id)\n" +
@@ -538,19 +533,19 @@ public class DatabaseConnection {
 
     public static final String CREATE_LEAVE_REQUEST_FORM = "CREATE TABLE IF NOT EXISTS Leave_Request_Form(\n" +
             "    id INT,\n" +
-            "    leave_date DATE,\n" +
+            "    leave_date LONG,\n" +
             "    days INT NOT NULL,\n" +
             "    manager_id INT,\n" +
-            "    approve_date DATE,\n" +
+            "    approve_date LONG,\n" +
             "    status VARCHAR(20) NOT NULL,\n" +
-            "    PRIMARY KEY (id, leave_date),\n" +
+            "    PRIMARY KEY (id, leave_date(13)),\n" +
             "    FOREIGN KEY (id) REFERENCES Employee(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (leave_date >= CURDATE() AND id > 0 AND days > 0)) ENGINE=InnoDB;";
+            "    CHECK (leave_date >= UNIX_TIMESTAMP() AND id > 0 AND days > 0)) ENGINE=InnoDB;";
 
     /*
     ============================RELATIONSHIP TABLE DEFINITIONS============================
@@ -649,10 +644,9 @@ public class DatabaseConnection {
             "    manager_id INT,\n" +
             "    security_staff_id INT,\n" +
             "    building_no VARCHAR(50),\n" +
-            "    date DATE,\n" +
-            "    start_hour TIME,\n" +
-            "    end_hour TIME,\n" +
-            "    PRIMARY KEY (manager_id, security_staff_id, building_no, date, start_hour, end_hour),\n" +
+            "    start_date LONG,\n" +
+            "    end_date LONG,\n" +
+            "    PRIMARY KEY (manager_id, security_staff_id, building_no, start_date(13), end_date(13)),\n" +
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
@@ -668,11 +662,10 @@ public class DatabaseConnection {
             "    housekeeper_id INT,\n" +
             "    room_no INT,\n" +
             "    building_no VARCHAR(50),\n" +
-            "    date DATE,\n" +
-            "    time TIME,\n" +
+            "    date LONG,\n" +
             "    status VARCHAR(20) NOT NULL,\n" +
             "    manager_id INT NOT NULL,\n" +
-            "    PRIMARY KEY (housekeeper_id, room_no, building_no, date),\n" +
+            "    PRIMARY KEY (housekeeper_id, room_no, building_no, date(13)),\n" +
             "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
@@ -682,5 +675,5 @@ public class DatabaseConnection {
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND CURDATE() <= date AND  CURTIME() <= time)) ENGINE=InnoDB;";
+            "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND UNIX_TIMESTAMP() <= date)) ENGINE=InnoDB;";
 }
