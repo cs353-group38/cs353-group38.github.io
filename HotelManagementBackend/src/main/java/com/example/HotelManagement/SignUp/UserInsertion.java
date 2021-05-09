@@ -299,8 +299,8 @@ public class UserInsertion {
         //find an unused id
         do {
             id = (int) (Math.random() * 100000);
-            user = userFetch.selectUserById(1);       //FIX THIS
-        } while (user == null);
+            user = userFetch.selectUserById(id);
+        } while (user != null);
         return id;
     }
 
