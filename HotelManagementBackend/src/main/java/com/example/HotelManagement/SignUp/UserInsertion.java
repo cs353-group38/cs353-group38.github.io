@@ -257,6 +257,35 @@ public class UserInsertion {
     }
 
     /**
+     * This method inserts a row with the given information to the Recruiter and Users table.
+     * @param firstName first name
+     * @param lastName last name
+     * @param email email
+     * @param password password
+     * @param phone phone
+     * @param address address
+     * @param gender gender
+     * @param dateOfBirth date of birth as Long value
+     * @param salary salary
+     * @param employmentDate employment date
+     * @param annualLeave annual leave
+     * @param securityRank security rank
+     * @param weapon weapon
+     * @return Success or fail message
+     */
+    public MessageResponse insertSecurityStaff(String firstName, String lastName, String email, String password, String phone,
+                                           String address, String gender, Long dateOfBirth, double salary,
+                                           Long employmentDate, int annualLeave, String securityRank, String weapon) {
+        String query;
+        int id = generateId();
+        MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
+        query = "INSERT INTO Security_Staff VALUES (" + id + ", '" + securityRank + "', '" + weapon + "');";
+        if (response.getMessageType() == MessageType.ERROR)
+            return response;
+        return executeUpdate(query);
+    }
+
+    /**
      * Generates an id that does not exist in the Users table.
      * @return The id
      */
