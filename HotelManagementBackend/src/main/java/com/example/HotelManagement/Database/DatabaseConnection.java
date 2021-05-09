@@ -21,7 +21,8 @@ public class DatabaseConnection {
      * @param type determines the type of the execution: FETCH for query, UPDATE for update
      * @return The result of the query as a ResultSet. null if type is UPDATE.
      */
-    public ResultSet execute(String query, int type ) {
+    public Object[] execute(String query, int type ) {
+        Object[] arr = new Object[2];
         Connection con = null;
         Statement stmt = null;
         try {
@@ -36,23 +37,20 @@ public class DatabaseConnection {
 
             if( type == FETCH ){
                 resultSet = stmt.executeQuery(query);
-                con.close();
-                return resultSet;
+                arr[0] = resultSet;
+                arr[1] = con;
+                return arr;
             }
             else if( type == UPDATE) {
                 stmt.executeUpdate(query);
-                con.close();
-                return null;
+                arr[0] = resultSet;
+                arr[1] = con;
+                return arr;
             }
         }
         catch (Exception e) {
-
-            try {
-                con.close();
-            }catch ( Exception e1 ){
-                System.out.println(e1.getMessage());
-            }
-
+            arr[0] = null;
+            arr[1] = con;
             System.out.println(e.getMessage());
         }
         return null;
