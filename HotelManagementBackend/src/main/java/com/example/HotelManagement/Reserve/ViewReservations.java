@@ -22,12 +22,17 @@ public class ViewReservations {
         this.userFetch = userFetch;
     }
 
+    /**
+     * View all reservations
+     * @return
+     * @throws Exception
+     */
     public List<ReservationDTO> viewAllReservations() throws Exception {
 
         List<ReservationDTO> reservations = new ArrayList<>();
 
-        String query = "SELECT * FROM (Reservation res NATURAL JOIN Room r NATURAL JOIN Room_Type rt NATURAL JOIN Building b" +
-                ") , (Guests g NATURAL JOIN Users u ) WHERE res.guest_id = g.id";
+        String query = "SELECT * FROM (Reservation res NATURAL JOIN Room r NATURAL JOIN Room_Type rt), Building b" +
+                " , (Guests g NATURAL JOIN Users u ) WHERE res.guest_id = g.id AND b.building_no = r.building_no";
         Object[] resultArr = null;
         resultArr = databaseConnection.execute(query,DatabaseConnection.FETCH);
 
@@ -38,7 +43,7 @@ public class ViewReservations {
             while ( rs.next()){
                 ReservationDTO reservationDTO =
                         new ReservationDTO(
-                                rs.getInt("res.reservation-id"),
+                                rs.getInt("res.reservation_id"),
                                 rs.getString("b.name"),
                                 rs.getString("b.location_name"),
                                 rs.getLong("res.check_in_date"),
@@ -47,7 +52,7 @@ public class ViewReservations {
                                 rs.getString("r.description"),
                                 rs.getDouble("rt.price"),
                                 rs.getInt("rt.no_of_people"),
-                                rs.getString("u.name"),
+                                rs.getString("u.firstname"),
                                 rs.getDouble("g.money_spent")
                         );
 
@@ -71,11 +76,17 @@ public class ViewReservations {
         return reservations;
     }
 
+    /**
+     * Views the reservation of the guest
+     * @param guestId
+     * @return
+     * @throws Exception
+     */
     public ReservationDTO viewReservation(int guestId ) throws Exception {
         ReservationDTO reservation = null;
 
-        String query = "SELECT * FROM (Reservation as res NATURAL JOIN Room as r NATURAL JOIN Room_Type as rt NATURAL JOIN Building as b" +
-                ") , (Guests as g NATURAL JOIN Users as u ) WHERE res.guest_id = g.id AND g.id = " + guestId;
+        String query = "SELECT * FROM (Reservation as res NATURAL JOIN Room as r NATURAL JOIN Room_Type as rt), Building as b," +
+                "(Guests as g NATURAL JOIN Users as u ) WHERE b.building_no = r.building_no AND res.guest_id = g.id AND g.id = " + guestId;
         Object[] resultArr = null;
         resultArr = databaseConnection.execute(query,DatabaseConnection.FETCH);
 
@@ -86,7 +97,7 @@ public class ViewReservations {
             rs.next();
                 reservation =
                         new ReservationDTO(
-                                rs.getInt("res.reservation-id"),
+                                rs.getInt("res.reservation_id"),
                                 rs.getString("b.name"),
                                 rs.getString("b.location_name"),
                                 rs.getLong("res.check_in_date"),
@@ -95,7 +106,7 @@ public class ViewReservations {
                                 rs.getString("r.description"),
                                 rs.getDouble("rt.price"),
                                 rs.getInt("rt.no_of_people"),
-                                rs.getString("u.name"),
+                                rs.getString("u.firstname"),
                                 rs.getDouble("g.money_spent")
                         );
             connection.close();
@@ -113,15 +124,21 @@ public class ViewReservations {
     }
 
 
+    /**
+     * Gets the available rooms
+     * @return
+     * @throws Exception
+     */
     public List<RoomDTO> getAllEmptyRooms() throws Exception {
 
         List<RoomDTO> rooms = new ArrayList<>();
 
+        Long time = System.currentTimeMillis();
         String query = "SELECT * FROM ( Room as r NATURAL JOIN Room_Type rt ), Building as b" +
                 " where b.building_no = r.building_no AND (r.room_no,r.building_no) NOT IN ("+
                 "SELECT res1.room_no,res1.building_no FROM Reservation as res1 " +
-                "where res1.check_out_date > " +System.currentTimeMillis() +
-                "res1.check_in_date < " + System.currentTimeMillis() + " )";
+                "WHERE res1.check_out_date > " + time +
+                " AND res1.check_in_date < " + time + " );";
 
         Object[] resultArr = null;
         resultArr = databaseConnection.execute(query,DatabaseConnection.FETCH);

@@ -24,6 +24,11 @@ public class MakeReservations {
         this.userInsertion = userInsertion;
     }
 
+    /**
+     * Makes a reservation
+     * @param makeReservationDTO
+     * @return
+     */
     public MessageResponse makeReservation(MakeReservationDTO makeReservationDTO) {
         String query;
 
