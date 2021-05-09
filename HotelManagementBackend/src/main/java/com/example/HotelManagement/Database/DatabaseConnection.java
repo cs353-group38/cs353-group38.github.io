@@ -1,9 +1,11 @@
 package com.example.HotelManagement.Database;
 
 import org.apache.coyote.http11.filters.SavedRequestInputFilter;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 
+@Service
 public class DatabaseConnection {
 
     public final static int FETCH = 0;
@@ -12,8 +14,6 @@ public class DatabaseConnection {
     private final String url = "jdbc:mysql://dijkstra.ug.bcc.bilkent.edu.tr:3306/bora_cun";
     private final String user = "bora.cun";
     private final String pass = "DPZ3a7Km";
-
-    public DatabaseConnection() {}
 
     /**
      * This method creates a connection, and executes a query or update.
