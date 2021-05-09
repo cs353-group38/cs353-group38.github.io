@@ -1,6 +1,7 @@
 package com.example.HotelManagement.SignUp;
 
 import com.example.HotelManagement.Database.DatabaseConnection;
+import com.example.HotelManagement.Entity.Candidate;
 import com.example.HotelManagement.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,52 @@ public class UserFetch {
             );
             connection.close();
             return user;
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                System.out.println(e1.getMessage());
+                return null;
+            }
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * This method fetches the candidate with the given id. If there are multiple entries for the same given id, only
+     * one of them is returned.
+     * @param givenId given id
+     * @return Candidate object
+     */
+    public Candidate selectCandidateById(int givenId) {
+        String query = "SELECT *\n" +
+                "FROM Candidate\n" +
+                "WHERE id = " + givenId + ";";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            User user = selectUserById(givenId);
+            resultSet.next();
+            Candidate candidate = new Candidate(
+                    resultSet.getInt("id"),
+                    user.getFirstname(),
+                    user.getLastname(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getPhone(),
+                    user.getAddress(),
+                    user.getGender(),
+                    user.getDate_of_birth(),
+                    resultSet.getString("cover_letter")
+            );
+            connection.close();
+            return candidate;
         }
         catch ( Exception e ){
             try {

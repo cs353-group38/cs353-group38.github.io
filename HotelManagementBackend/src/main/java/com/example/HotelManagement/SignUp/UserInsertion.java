@@ -3,6 +3,7 @@ package com.example.HotelManagement.SignUp;
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
+import com.example.HotelManagement.Entity.Candidate;
 import com.example.HotelManagement.Entity.User;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import java.sql.ResultSet;
 
 @Service
 public class UserInsertion {
+
+    private final int HK_SALARY = 5000;
+    private final int ANNUAL_LEAVE = 20;
+    private final String OFFICE_NO = "A-105";
 
     private DatabaseConnection databaseConnection;
     private UserFetch userFetch;
@@ -288,6 +293,157 @@ public class UserInsertion {
         query = "INSERT INTO Security_Staff VALUES (" + id + ", '" + securityRank + "', '" + weapon + "');";
         if (response.getMessageType().equals(MessageType.ERROR))
             return response;
+        return executeUpdate(query);
+    }
+
+    //==============================Promote Methods==============================
+    /**
+     * Promotes a candidate to a housekeeper in the database.
+     * @param id id of the user to be promoted
+     * @return Message response
+     */
+    public MessageResponse promoteToHousekeeper(int id) {
+        Candidate candidate = userFetch.selectCandidateById(id);
+        String query;
+        MessageResponse response;
+        if(candidate == null) {
+            return new MessageResponse("No such candidate.", MessageType.ERROR);
+        }
+
+        query = "DELETE FROM Candidate\n" +
+                "WHERE id=" + id + ";";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Housekeeper VALUES (" + id + ");";
+        return executeUpdate(query);
+    }
+
+    /**
+     * Promotes a candidate to a manager in the database.
+     * @param id id of the user to be promoted
+     * @return Message response
+     */
+    public MessageResponse promoteToManager(int id) {
+        Candidate candidate = userFetch.selectCandidateById(id);
+        String query;
+        MessageResponse response;
+        if(candidate == null) {
+            return new MessageResponse("No such candidate.", MessageType.ERROR);
+        }
+
+        query = "DELETE FROM Candidate\n" +
+                "WHERE id=" + id + ";";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Manager VALUES (" + id + ", '" + OFFICE_NO + "');";
+        return executeUpdate(query);
+    }
+
+    /**
+     * Promotes a candidate to a receptionist in the database.
+     * @param id id of the user to be promoted
+     * @return Message response
+     */
+    public MessageResponse promoteToReceptionist(int id) {
+        Candidate candidate = userFetch.selectCandidateById(id);
+        String query;
+        MessageResponse response;
+        if(candidate == null) {
+            return new MessageResponse("No such candidate.", MessageType.ERROR);
+        }
+
+        query = "DELETE FROM Candidate\n" +
+                "WHERE id=" + id + ";";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Receptionist VALUES (" + id + ");";
+        return executeUpdate(query);
+    }
+
+    /**
+     * Promotes a candidate to a recruiter in the database.
+     * @param id id of the user to be promoted
+     * @return Message response
+     */
+    public MessageResponse promoteToRecruiter(int id) {
+        Candidate candidate = userFetch.selectCandidateById(id);
+        String query;
+        MessageResponse response;
+        if(candidate == null) {
+            return new MessageResponse("No such candidate.", MessageType.ERROR);
+        }
+
+        query = "DELETE FROM Candidate\n" +
+                "WHERE id=" + id + ";";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Recruiter VALUES (" + id + ");";
+        return executeUpdate(query);
+    }
+
+    /**
+     * Promotes a candidate to a security staff in the database.
+     * @param id id of the user to be promoted
+     * @return Message response
+     */
+    public MessageResponse promoteToSecurityStaff(int id) {
+        Candidate candidate = userFetch.selectCandidateById(id);
+        String query;
+        MessageResponse response;
+        if(candidate == null) {
+            return new MessageResponse("No such candidate.", MessageType.ERROR);
+        }
+
+        query = "DELETE FROM Candidate\n" +
+                "WHERE id=" + id + ";";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        response = executeUpdate(query);
+        if(response.getMessageType().equals(MessageType.ERROR)) {
+            return response;
+        }
+
+        query = "INSERT INTO Security_Staff VALUES (" + id + ", '" + "Beginner" + "', '" + "Pistol" + "');";
         return executeUpdate(query);
     }
 
