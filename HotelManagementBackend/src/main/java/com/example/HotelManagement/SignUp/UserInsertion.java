@@ -3,10 +3,13 @@ package com.example.HotelManagement.SignUp;
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
+import com.example.HotelManagement.Entity.User;
 import org.apache.logging.log4j.message.Message;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 
+@Service
 public class UserInsertion {
 
     private DatabaseConnection databaseConnection;
@@ -291,13 +294,13 @@ public class UserInsertion {
      */
     private int generateId() {
         int id;
-        ResultSet rs;
+        User user;
 
         //find an unused id
         do {
             id = (int) (Math.random() * 100000);
-            rs = userFetch.selectUserById(1);       //FIX THIS
-        } while (rs == null);
+            user = userFetch.selectUserById(1);       //FIX THIS
+        } while (user == null);
         return id;
     }
 
