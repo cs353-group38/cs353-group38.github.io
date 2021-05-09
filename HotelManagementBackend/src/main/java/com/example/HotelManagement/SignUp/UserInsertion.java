@@ -8,6 +8,7 @@ import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 
 @Service
@@ -312,11 +313,20 @@ public class UserInsertion {
      * @param query The query to be executed.
      * @return
      */
-    private MessageResponse executeUpdate(String query) {
+    public MessageResponse executeUpdate(String query) {
+        Connection connection = null;
         try {
-            databaseConnection.execute(query, DatabaseConnection.UPDATE);
+            Object[] arr = databaseConnection.execute(query, DatabaseConnection.UPDATE);
+            connection = (Connection) arr[1];
+            connection.close();
         }
         catch (Exception e) {
+            try{
+                connection.close();
+            }catch (Exception e1){
+
+                return new MessageResponse("Connection failed",MessageType.ERROR);
+            }
             return new MessageResponse("User insertion failed.", MessageType.ERROR);
         }
         return new MessageResponse("User insertion successful.", MessageType.SUCCESS);

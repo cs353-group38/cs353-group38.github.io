@@ -51,7 +51,7 @@ public class DatabaseConnection {
         catch (Exception e) {
             arr[0] = null;
             arr[1] = con;
-            System.out.println(e.getMessage());
+            return arr;
         }
         return null;
     }
