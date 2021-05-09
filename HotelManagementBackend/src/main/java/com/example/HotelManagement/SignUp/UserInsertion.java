@@ -95,7 +95,7 @@ public class UserInsertion {
         response = insertUser(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth);
         query = "INSERT INTO Candidate VALUES (" + id + ", '" + coverLetter + "');";
 
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -121,7 +121,7 @@ public class UserInsertion {
         String query;
         MessageResponse response = insertUser(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth);
         query = "INSERT INTO Employee VALUES (" + id + ", " + salary + ", " + employmentDate + ", " + annualLeave + ");";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -145,7 +145,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertUser(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth);
         query = "INSERT INTO Guests VALUES (" + id + ", " + moneySpent + ");";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -172,7 +172,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
         query = "INSERT INTO Housekeeper VALUES (" + id + ");";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -200,7 +200,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
         query = "INSERT INTO Manager VALUES (" + id + ", '" + officeNo + "');";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -227,7 +227,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
         query = "INSERT INTO Receptionist VALUES (" + id + ");";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -254,7 +254,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
         query = "INSERT INTO Recruiter VALUES (" + id + ");";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -283,7 +283,7 @@ public class UserInsertion {
         int id = generateId();
         MessageResponse response = insertEmployee(id, firstName, lastName, email, password, phone, address, gender, dateOfBirth, salary, employmentDate, annualLeave);
         query = "INSERT INTO Security_Staff VALUES (" + id + ", '" + securityRank + "', '" + weapon + "');";
-        if (response.getMessageType() == MessageType.ERROR)
+        if (response.getMessageType().equals(MessageType.ERROR))
             return response;
         return executeUpdate(query);
     }
@@ -299,8 +299,8 @@ public class UserInsertion {
         //find an unused id
         do {
             id = (int) (Math.random() * 100000);
-            user = userFetch.selectUserById(1);       //FIX THIS
-        } while (user == null);
+            user = userFetch.selectUserById(id);
+        } while (user != null);
         return id;
     }
 
