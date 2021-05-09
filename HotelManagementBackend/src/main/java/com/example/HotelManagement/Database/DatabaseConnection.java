@@ -43,7 +43,7 @@ public class DatabaseConnection {
             }
             else if( type == UPDATE) {
                 stmt.executeUpdate(query);
-                arr[0] = resultSet;
+                arr[0] = null;
                 arr[1] = con;
                 return arr;
             }
