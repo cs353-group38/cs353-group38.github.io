@@ -13,15 +13,6 @@ import java.sql.SQLException;
 public class HotelManagementApplication {
 
 	public static void main(String[] args) throws SQLException {
-		//These are for test purposes, will be deleted later
-		DatabaseConnection databaseConnection = new DatabaseConnection();
-		UserFetch userFetch = new UserFetch(databaseConnection);
-		UserInsertion userInsertion = new UserInsertion(databaseConnection, userFetch);
-		//databaseConnection.dropAllTables();
-		//databaseConnection.createAllTables();
-		//userInsertion.insertGuest("Eray", "Tuzun", "eray2@bilkent", "password", "532587",
-		//		"Ankara", "Male", 123123123L, 0);
-		//--------------------------------------------------
 		SpringApplication.run(HotelManagementApplication.class, args);
 	}
 

@@ -2,6 +2,7 @@ package com.example.HotelManagement.SignUp;
 
 import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.Entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -12,6 +13,7 @@ public class UserFetch {
 
     private DatabaseConnection databaseConnection;
 
+    @Autowired
     public UserFetch(DatabaseConnection databaseConnection) {
         this.databaseConnection = databaseConnection;
     }

@@ -5,6 +5,7 @@ import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.Entity.User;
 import org.apache.logging.log4j.message.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ public class UserInsertion {
     private DatabaseConnection databaseConnection;
     private UserFetch userFetch;
 
+    @Autowired
     public UserInsertion(DatabaseConnection databaseConnection, UserFetch userFetch) {
         this.databaseConnection = databaseConnection;
         this.userFetch = userFetch;
