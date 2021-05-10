@@ -3,6 +3,8 @@ package com.example.HotelManagement.Controller;
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.Events.CreateEvent;
 import com.example.HotelManagement.Events.CreateEventDTO;
+import com.example.HotelManagement.Events.CreateGroupToursDTO;
+import com.example.HotelManagement.Events.CreateGuestActivityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,39 @@ public class EventController {
                 createEventDTO.getQuota(),
                 createEventDTO.getDescription(),
                 createEventDTO.getMgrId()
+        );
+    }
+
+    @PostMapping("/createActivity")
+    public MessageResponse createActivity(@RequestBody CreateGuestActivityDTO createGuestActivityDTO) {
+        return createEvent.createActivity(
+                createGuestActivityDTO.getEventName(),
+                createGuestActivityDTO.getLocationName(),
+                createGuestActivityDTO.getStartDate(),
+                createGuestActivityDTO.getEndDate(),
+                createGuestActivityDTO.getMinAge(),
+                createGuestActivityDTO.getQuota(),
+                createGuestActivityDTO.getDescription(),
+                createGuestActivityDTO.getMgrId(),
+                createGuestActivityDTO.getPrice()
+        );
+    }
+
+    @PostMapping("/createGroupTour")
+    public MessageResponse createGroupTours(@RequestBody CreateGroupToursDTO createGroupToursDTO) {
+        return createEvent.createGroupTours(
+                createGroupToursDTO.getEventName(),
+                createGroupToursDTO.getLocationName(),
+                createGroupToursDTO.getStartDate(),
+                createGroupToursDTO.getEndDate(),
+                createGroupToursDTO.getMinAge(),
+                createGroupToursDTO.getQuota(),
+                createGroupToursDTO.getDescription(),
+                createGroupToursDTO.getMgrId(),
+                createGroupToursDTO.getPrice(),
+                createGroupToursDTO.getOrganizerName(),
+                createGroupToursDTO.getTourVehicle(),
+                createGroupToursDTO.getDistanceToCover()
         );
     }
 }

@@ -6,6 +6,7 @@ import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.Entity.User;
 import com.example.HotelManagement.SignUp.UserFetch;
 import com.example.HotelManagement.SignUp.UserInsertion;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,9 @@ public class CreateEvent {
         if(!entryExists("Location", 0, "name", locationName))
             return new MessageResponse("Location not found.", MessageType.ERROR);
 
+        if(startDate > endDate)
+            return new MessageResponse("End time of the event should be later than the start of the event.", MessageType.ERROR);
+
         query = "INSERT INTO Event VALUES(" + id + ", '" + eventName + "', '" + locationName + "', " +
                 startDate + ", " + endDate + ", " + minAge + ", " + quota + ", '" + description + "', " + mgrId + ");";
 
@@ -89,6 +93,99 @@ public class CreateEvent {
         }
 
         return new MessageResponse("Insertion successful",MessageType.SUCCESS);
+    }
+
+    /**
+     * This method inserts and entry in the Guest Activity table using the given information
+     * @param eventName event name
+     * @param locationName location name
+     * @param startDate start date
+     * @param endDate end date
+     * @param minAge min age
+     * @param quota quota
+     * @param description description
+     * @param mgrId manager id
+     * @param price price of the guest activity
+     * @return Message Response
+     */
+    private MessageResponse createGuestActivity(int id, String eventName, String locationName, Long startDate, Long endDate,
+                                                int minAge, int quota, String description, int mgrId, double price) {
+        String query;
+        MessageResponse createEventResponse = createEvent(id, eventName, locationName, startDate, endDate, minAge, quota, description, mgrId);
+
+        if(createEventResponse.getMessageType().equals(MessageType.ERROR))
+            return createEventResponse;
+
+        query = "INSERT INTO Guest_Activity VALUES (" + id + ", " + price + ");";
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Guest Activity failed",MessageType.ERROR);
+        }
+
+        return new MessageResponse("Insertion successful", MessageType.SUCCESS);
+    }
+
+    /**
+     * This method inserts and entry in the Activity table using the given information
+     * @param eventName event name
+     * @param locationName location name
+     * @param startDate start date
+     * @param endDate end date
+     * @param minAge min age
+     * @param quota quota
+     * @param description description
+     * @param mgrId manager id
+     * @param price price of the guest activity
+     * @return Message Response
+     */
+    public MessageResponse createActivity(String eventName, String locationName, Long startDate, Long endDate,
+                                                 int minAge, int quota, String description, int mgrId, double price) {
+        String query;
+        int id = generateEventId();
+        MessageResponse createGuestActivityResponse = createGuestActivity(id, eventName, locationName, startDate, endDate, minAge, quota, description, mgrId, price);
+
+        if(createGuestActivityResponse.getMessageType().equals(MessageType.ERROR))
+            return createGuestActivityResponse;
+
+        query = "INSERT INTO Activity VALUES (" + id + ");";
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Activity failed",MessageType.ERROR);
+        }
+
+        return new MessageResponse("Insertion successful", MessageType.SUCCESS);
+    }
+
+    /**
+     * This method inserts and entry in the Activity table using the given information
+     * @param eventName event name
+     * @param locationName location name
+     * @param startDate start date
+     * @param endDate end date
+     * @param minAge min age
+     * @param quota quota
+     * @param description description
+     * @param mgrId manager id
+     * @param price price of the guest activity
+     * @param organizerName organizer name
+     * @param tourVehicle tour vehicle
+     * @param distanceToCover distance to cover
+     * @return Message Response
+     */
+    public MessageResponse createGroupTours(String eventName, String locationName, Long startDate, Long endDate,
+                                          int minAge, int quota, String description, int mgrId, double price,
+                                          String organizerName, String tourVehicle, int distanceToCover) {
+        String query;
+        int id = generateEventId();
+        MessageResponse createGuestActivityResponse = createGuestActivity(id, eventName, locationName, startDate, endDate, minAge, quota, description, mgrId, price);
+
+        if(createGuestActivityResponse.getMessageType().equals(MessageType.ERROR))
+            return createGuestActivityResponse;
+
+        query = "INSERT INTO Group_Tours VALUES (" + id + ", '" + organizerName + "', '" + tourVehicle + "', " + distanceToCover + ");";
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Group Tours failed",MessageType.ERROR);
+        }
+
+        return new MessageResponse("Insertion successful", MessageType.SUCCESS);
     }
 
     /**
