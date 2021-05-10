@@ -1,11 +1,10 @@
 package com.example.HotelManagement.Reserve;
 
+import com.example.HotelManagement.Comment.CommentDTO;
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
-import com.example.HotelManagement.Entity.User;
 import com.example.HotelManagement.SignUp.UserInsertion;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
