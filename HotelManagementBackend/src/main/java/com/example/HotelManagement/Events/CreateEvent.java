@@ -99,7 +99,7 @@ public class CreateEvent {
      * @param stringKey If the primary key is not an entry but a string, enter the key here. Otherwise enter null
      * @return true if entry exists, false if not.
      */
-    private boolean entryExists(String tableName, int id, String idColumnName, String stringKey){
+    public boolean entryExists(String tableName, int id, String idColumnName, String stringKey){
         String query;
         boolean result;
         if(stringKey == null) {
