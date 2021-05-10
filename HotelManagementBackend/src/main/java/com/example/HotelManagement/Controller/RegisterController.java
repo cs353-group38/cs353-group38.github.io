@@ -4,6 +4,9 @@ import com.example.HotelManagement.AnnualLeave.AnnualLeaveDTO;
 import com.example.HotelManagement.AnnualLeave.DetailedAnnuaLeaveDTO;
 import com.example.HotelManagement.AnnualLeave.ManageAnnualLeaves;
 import com.example.HotelManagement.AnnualLeave.ResponseDTO;
+import com.example.HotelManagement.Comment.CommentDTO;
+import com.example.HotelManagement.Comment.MakeComment;
+import com.example.HotelManagement.Comment.ViewCommentDTO;
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Entity.User;
@@ -14,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import java.util.List;
 
 @RestController
@@ -25,14 +27,17 @@ public class RegisterController {
     private final MakeReservations makeReservations;
     private final ViewFoods viewFoods;
     private final ManageAnnualLeaves manageAnnualLeaves;
+    private final MakeComment makeComment;
 
     @Autowired
-    public RegisterController(UserInsertion userInsertion, ViewReservations viewReservations, MakeReservations makeReservations, ViewFoods viewFoods, ManageAnnualLeaves manageAnnualLeaves) {
+    public RegisterController(UserInsertion userInsertion, ViewReservations viewReservations, MakeReservations makeReservations,
+                              ViewFoods viewFoods, ManageAnnualLeaves manageAnnualLeaves, MakeComment makeComment) {
         this.userInsertion = userInsertion;
         this.viewReservations = viewReservations;
         this.makeReservations = makeReservations;
         this.viewFoods = viewFoods;
         this.manageAnnualLeaves = manageAnnualLeaves;
+        this.makeComment = makeComment;
     }
 
     @ExceptionHandler(Exception.class)
@@ -249,4 +254,20 @@ public class RegisterController {
     public MessageResponse answer( @RequestBody ResponseDTO responseDTO ){
         return manageAnnualLeaves.respond(responseDTO);
     }
+
+    @PostMapping("/comment")
+    public MessageResponse comment( @RequestBody CommentDTO commentDTO ){
+        return makeComment.comment(commentDTO);
+    }
+
+    @GetMapping("/viewComments")
+    public List<ViewCommentDTO> viewComments() throws Exception {
+        return makeComment.viewComments();
+    }
+
+    @GetMapping("/viewComments/{guestId}")
+    public List<ViewCommentDTO> viewCommentsGuest( @PathVariable("guestId") int guestId ) throws Exception {
+        return makeComment.viewCommentsGuest(guestId);
+    }
+
 }
