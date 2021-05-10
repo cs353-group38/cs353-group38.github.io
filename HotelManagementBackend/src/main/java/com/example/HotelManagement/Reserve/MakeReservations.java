@@ -62,7 +62,7 @@ public class MakeReservations {
     private boolean selectReservationById(int id) {
         String query = "SELECT *\n" +
                 "FROM Reservation\n" +
-                "WHERE id = " + id + ";";
+                "WHERE reservation_id = " + id + ";";
 
         Object[] resultArr = null;
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
