@@ -1,5 +1,7 @@
 package com.example.HotelManagement.SignUp;
 
+import com.example.HotelManagement.DTO.MessageResponse;
+import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.Entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,5 +261,77 @@ public class UserFetch {
             System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Used when a single integer is needed from the database.
+     * @param query query to pull out a single integer
+     * @param columnLabel attribute name of the desired integer
+     * @return int
+     * @throws Exception exception
+     */
+    public int fetchInt(String query, String columnLabel) throws Exception {
+        Object[] arr;
+        ResultSet rs = null;
+        Connection connection = null;
+        int result = 0;
+
+        try {
+            arr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+            rs = (ResultSet) arr[0];
+            connection = (Connection) arr[1];
+
+            while (rs.next()) {
+                result = rs.getInt(columnLabel);      //gets the result
+            }
+
+            connection.close();
+        }
+        catch(Exception e) {
+            try {
+                connection.close();
+            }
+            catch (Exception e1) {
+                throw new Exception("Connection failed");
+            }
+            throw new Exception(columnLabel + " fetch failed.");
+        }
+        return result;
+    }
+
+    /**
+     * Used when a single integer is needed from the database.
+     * @param query query to pull out a single integer
+     * @param columnLabel attribute name of the desired integer
+     * @return int
+     * @throws Exception exception
+     */
+    public Long fetchLong(String query, String columnLabel) throws Exception {
+        Object[] arr;
+        ResultSet rs = null;
+        Connection connection = null;
+        Long result = null;
+
+        try {
+            arr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+            rs = (ResultSet) arr[0];
+            connection = (Connection) arr[1];
+
+            while (rs.next()) {
+                result = rs.getLong(columnLabel);      //gets the result
+            }
+
+            connection.close();
+        }
+        catch(Exception e) {
+            try {
+                connection.close();
+            }
+            catch (Exception e1) {
+                throw new Exception("Connection failed");
+            }
+            throw new Exception(columnLabel + " fetch failed.");
+        }
+        return result;
     }
 }

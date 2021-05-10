@@ -65,7 +65,7 @@ public class EventController {
     }
 
     @PostMapping("/buyTicket/{eventId}/{guestId}")
-    public MessageResponse buyTicket(@PathVariable int guestId, @PathVariable int eventId) {
+    public MessageResponse buyTicket(@PathVariable int guestId, @PathVariable int eventId) throws Exception {
         return buyTicket.buyTicket(guestId, eventId);
     }
 }

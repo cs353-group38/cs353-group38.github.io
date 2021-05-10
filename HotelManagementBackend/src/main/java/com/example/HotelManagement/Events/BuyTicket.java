@@ -33,11 +33,14 @@ public class BuyTicket {
      * @param eventId id of the event
      * @return Message response
      */
-    public MessageResponse buyTicket(int guestId, int eventId) {
+    public MessageResponse buyTicket(int guestId, int eventId) throws Exception {
         int ticketId;
         String query;
         double price = 0;
         int quota = 0;
+        int guestAge = 0;
+        Long guestDOB = null;      //date of birth
+        int minAge = 0;
         Object[] arr;
         ResultSet rs = null;
         Connection connection = null;
@@ -49,30 +52,27 @@ public class BuyTicket {
         if(!createEvent.entryExists("Guests", guestId, "id", null))
             return new MessageResponse("No such Guest.", MessageType.ERROR);
 
+        query = "SELECT date_of_birth\n" +
+                "FROM Users\n" +
+                "WHERE id = " + guestId + ";";
+
+        guestDOB = userFetch.fetchLong(query, "date_of_birth");
+        guestAge = (int) ((System.currentTimeMillis() - guestDOB) / 31556952000L);      //convert to age
+
+        query = "SELECT min_age\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        minAge = userFetch.fetchInt(query, "min_age");
+
+        if(guestAge < minAge)
+            return new MessageResponse("Age requirements not met.", MessageType.ERROR);
+
         query = "SELECT quota\n" +
                 "FROM Event\n" +
                 "WHERE event_id = " + eventId + ";";
 
-        try {
-            arr = databaseConnection.execute(query, DatabaseConnection.FETCH);
-            rs = (ResultSet) arr[0];
-            connection = (Connection) arr[1];
-
-            while (rs.next()) {
-                quota = rs.getInt("quota");      //gets quota before the operation
-            }
-
-            connection.close();
-        }
-        catch(Exception e) {
-            try {
-                connection.close();
-            }
-            catch (Exception e1) {
-                return new MessageResponse("Connection failed", MessageType.ERROR);
-            }
-            return new MessageResponse("Quota fetch failed.", MessageType.ERROR);
-        }
+        quota = userFetch.fetchInt(query, "quota");
 
         if(quota <= 0)
             return new MessageResponse("Not enough quota for this event.", MessageType.ERROR);
