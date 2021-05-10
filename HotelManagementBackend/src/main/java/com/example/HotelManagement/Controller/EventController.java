@@ -1,23 +1,20 @@
 package com.example.HotelManagement.Controller;
 
 import com.example.HotelManagement.DTO.MessageResponse;
-import com.example.HotelManagement.Events.CreateEvent;
-import com.example.HotelManagement.Events.CreateEventDTO;
-import com.example.HotelManagement.Events.CreateGroupToursDTO;
-import com.example.HotelManagement.Events.CreateGuestActivityDTO;
+import com.example.HotelManagement.Events.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class EventController {
 
     private final CreateEvent createEvent;
+    private final BuyTicket buyTicket;
 
     @Autowired
-    public EventController(CreateEvent createEvent) {
+    public EventController(CreateEvent createEvent, BuyTicket buyTicket) {
         this.createEvent = createEvent;
+        this.buyTicket = buyTicket;
     }
 
     @PostMapping("/createTrainingProgram")
@@ -65,5 +62,10 @@ public class EventController {
                 createGroupToursDTO.getTourVehicle(),
                 createGroupToursDTO.getDistanceToCover()
         );
+    }
+
+    @PostMapping("/buyTicket/{eventId}/{guestId}")
+    public MessageResponse buyTicket(@PathVariable int guestId, @PathVariable int eventId) throws Exception {
+        return buyTicket.buyTicket(guestId, eventId);
     }
 }
