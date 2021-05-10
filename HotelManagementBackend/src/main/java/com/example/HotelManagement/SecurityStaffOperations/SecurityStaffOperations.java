@@ -33,7 +33,7 @@ public class SecurityStaffOperations {
      * @param endDate End date and hour as Long
      * @return Message response indicating success or fail.
      */
-    public MessageResponse assignSecurityWalk(int mgrId, int ssId, String buildingNo, Long startDate, Long endDate) throws SQLException {
+    public MessageResponse assignSecurityWalk(int mgrId, int ssId, String buildingNo, Long startDate, Long endDate) {
         String query;
         if(userFetch.selectSecurityStaffById(ssId) == null)
             return new MessageResponse("No such security staff.", MessageType.ERROR);
