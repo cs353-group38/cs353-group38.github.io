@@ -245,26 +245,52 @@ public class RegisterController {
         return manageAnnualLeaves.getAnnualDays(id);
     }
 
+    /**
+     * Used to view leave requests
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/viewLeaveRequests")
     public List<DetailedAnnuaLeaveDTO> getLeaveRequests() throws Exception {
         return manageAnnualLeaves.viewAllLeaveRequests();
     }
 
+    /**
+     * Used to respond to a leave request
+     * @param responseDTO
+     * @return
+     */
     @PutMapping("/answerRequestLeave")
     public MessageResponse answer( @RequestBody ResponseDTO responseDTO ){
         return manageAnnualLeaves.respond(responseDTO);
     }
 
+    /**
+     * Used to comment on a reservation
+     * @param commentDTO
+     * @return
+     */
     @PostMapping("/comment")
     public MessageResponse comment( @RequestBody CommentDTO commentDTO ){
         return makeComment.comment(commentDTO);
     }
 
+    /**
+     * Used to view all of the comments
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/viewComments")
     public List<ViewCommentDTO> viewComments() throws Exception {
         return makeComment.viewComments();
     }
 
+    /**
+     * Used to view comments of a guest
+     * @param guestId
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/viewComments/{guestId}")
     public List<ViewCommentDTO> viewCommentsGuest( @PathVariable("guestId") int guestId ) throws Exception {
         return makeComment.viewCommentsGuest(guestId);
