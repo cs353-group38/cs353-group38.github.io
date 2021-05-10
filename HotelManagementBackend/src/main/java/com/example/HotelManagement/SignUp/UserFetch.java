@@ -260,18 +260,4 @@ public class UserFetch {
             return null;
         }
     }
-
-    public boolean buildingExists(String givenBuildingNo) throws SQLException {
-        boolean result;
-        String query = "SELECT *\n" +
-                "FROM Building\n" +
-                "WHERE building_no = '" + givenBuildingNo + "';";
-
-        Object[] resultArr = null;
-        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
-        ResultSet resultSet = (ResultSet) resultArr[0];
-        Connection connection = (Connection) resultArr[1];
-
-        return resultSet.next();
-    }
 }
