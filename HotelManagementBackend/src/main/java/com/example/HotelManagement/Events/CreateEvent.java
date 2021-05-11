@@ -218,11 +218,11 @@ public class CreateEvent {
         try {
             result = resultSet.next();
         }
-        catch(SQLException e) {
+        catch(Exception e) {
             try {
                 connection.close();
             }
-            catch (SQLException e1) {
+            catch (Exception e1) {
                 throw new IllegalArgumentException("Error when closing the connection");        //SKETCHY
             }
             return false;
@@ -230,7 +230,7 @@ public class CreateEvent {
         try {
             connection.close();
         }
-        catch (SQLException e1) {
+        catch (Exception e1) {
             throw new IllegalArgumentException("Error when closing the connection");        //SKETCHY
         }
         return result;

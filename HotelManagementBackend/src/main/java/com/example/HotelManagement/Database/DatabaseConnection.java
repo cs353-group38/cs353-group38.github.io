@@ -513,7 +513,7 @@ public class DatabaseConnection {
             "    position VARCHAR(50),\n" +
             "    status VARCHAR(20) NOT NULL,\n" +
             "    PRIMARY KEY (id, position),\n" +
-            "    FOREIGN KEY (id) REFERENCES Candidate(id)\n" +
+            "    FOREIGN KEY (id) REFERENCES Users(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
             "    CHECK (id > 0)) ENGINE=InnoDB;";

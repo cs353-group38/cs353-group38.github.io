@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 /**
  * This class consists of the operations about joining an event
@@ -266,7 +267,7 @@ public class BuyTicket {
             return new MessageResponse("Application not found.", MessageType.ERROR);
         }
 
-        status = status.toUpperCase();
+        status = status.toUpperCase(Locale.ENGLISH);
         if(!status.equals("APPROVED") && !status.equals("REJECTED")) {
             return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
         }
@@ -311,7 +312,7 @@ public class BuyTicket {
             return new MessageResponse("Application not found.", MessageType.ERROR);
         }
 
-        status = status.toUpperCase();
+        status = status.toUpperCase(Locale.ENGLISH);
         if(!status.equals("APPROVED") && !status.equals("REJECTED")) {
             return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
         }
