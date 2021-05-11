@@ -152,6 +152,10 @@ public class BuyTicket {
         if(!createEvent.entryExists("Housekeeper", hkId, "id", null))
             return new MessageResponse("No such Housekeeper.", MessageType.ERROR);
 
+        if(doublePrimaryEntryExists("HK_Applies_To", hkId, "housekeeper_id", eventId, "training_program_id")) {
+            return new MessageResponse("You have already applied to this Training Program.", MessageType.ERROR);
+        }
+
         query = "SELECT date_of_birth\n" +
                 "FROM Users\n" +
                 "WHERE id = " + hkId + ";";
@@ -206,6 +210,10 @@ public class BuyTicket {
 
         if(!createEvent.entryExists("Security_Staff", ssId, "id", null))
             return new MessageResponse("No such Security Staff.", MessageType.ERROR);
+
+        if(doublePrimaryEntryExists("Sec_Staff_Applies_To", ssId, "sec_staff_id", eventId, "training_program_id")) {
+            return new MessageResponse("You have already applied to this Training Program.", MessageType.ERROR);
+        }
 
         query = "SELECT date_of_birth\n" +
                 "FROM Users\n" +
@@ -263,6 +271,10 @@ public class BuyTicket {
             return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
         }
 
+        if(doublePrimaryEntryExists("Evaluates_HK_Application", hkId, "housekeeper_id", eventId, "training_program_id")) {
+            return new MessageResponse("Already Evaluated.", MessageType.ERROR);
+        }
+
         //insertion to the relationship table
         query = "INSERT INTO Evaluates_HK_Application VALUES(" + hkId + ", " + eventId + ", " + mgrId + ", '" + status + "');";
 
@@ -295,13 +307,17 @@ public class BuyTicket {
         String query;
 
         //preconditions
-        if(!doublePrimaryEntryExists("Sec_Staff_Applies_To", ssId, "housekeeper_id", eventId, "training_program_id")) {
+        if(!doublePrimaryEntryExists("Sec_Staff_Applies_To", ssId, "sec_staff_id", eventId, "training_program_id")) {
             return new MessageResponse("Application not found.", MessageType.ERROR);
         }
 
         status = status.toUpperCase();
         if(!status.equals("APPROVED") && !status.equals("REJECTED")) {
             return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
+        }
+
+        if(doublePrimaryEntryExists("Evaluates_Sec_Staff_Application", ssId, "sec_staff_id", eventId, "training_program_id")) {
+            return new MessageResponse("Already Evaluated.", MessageType.ERROR);
         }
 
         //insertion to the relationship table
@@ -348,7 +364,7 @@ public class BuyTicket {
         try {
             result = resultSet.next();
         }
-        catch(SQLException e) {
+        catch(Exception e) {
             try {
                 connection.close();
             }
@@ -360,7 +376,7 @@ public class BuyTicket {
         try {
             connection.close();
         }
-        catch (SQLException e1) {
+        catch (Exception e1) {
             throw new IllegalArgumentException("Error when closing the connection");        //SKETCHY
         }
         return result;
