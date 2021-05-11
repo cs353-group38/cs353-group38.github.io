@@ -65,7 +65,41 @@ public class EventController {
     }
 
     @PostMapping("/buyTicket/{eventId}/{guestId}")
-    public MessageResponse buyTicket(@PathVariable int guestId, @PathVariable int eventId) throws Exception {
+    public MessageResponse buyTicket(@PathVariable(name = "guestId") int guestId, @PathVariable(name = "eventId") int eventId) throws Exception {
         return buyTicket.buyTicket(guestId, eventId);
+    }
+
+    /**
+     * A housekeeper applies to a training program
+     * @param hkId housekeeper id
+     * @param eventId event id
+     * @return Message response
+     * @throws Exception exception
+     */
+    @PostMapping("/applyAsHK/{eventId}/{hkId}")
+    public MessageResponse applyAsHousekeeper(@PathVariable(name = "hkId") int hkId, @PathVariable(name = "eventId") int eventId) throws Exception {
+        return buyTicket.applyAsHousekeeper(hkId, eventId);
+    }
+
+    /**
+     * A security staff applies to a training program
+     * @param ssId security staff
+     * @param eventId event id
+     * @return Message response
+     * @throws Exception exception
+     */
+    @PostMapping("/applyAsSS/{eventId}/{ssId}")
+    public MessageResponse applyAsSecurityStaff(@PathVariable(name = "ssId") int ssId, @PathVariable(name = "eventId") int eventId) throws Exception {
+        return buyTicket.applyAsSecurityStaff(ssId, eventId);
+    }
+
+    @PostMapping("/evaluateHKApplication")
+    public MessageResponse evaluateHKApplication(@RequestBody EvaluateEmployeeDTO dto) {
+        return buyTicket.evaluateHKApplication(dto.getEmployeeId(), dto.getEventId(), dto.getMgrId(), dto.getStatus());
+    }
+
+    @PostMapping("/evaluateSSApplication")
+    public MessageResponse evaluateSSApplication(@RequestBody EvaluateEmployeeDTO dto) {
+        return buyTicket.evaluateSSApplication(dto.getEmployeeId(), dto.getEventId(), dto.getMgrId(), dto.getStatus());
     }
 }

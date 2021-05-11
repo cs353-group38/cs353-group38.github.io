@@ -10,7 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
+/**
+ * This class consists of the operations about joining an event
+ */
 @Service
 public class BuyTicket {
     private UserFetch userFetch;
@@ -126,6 +130,240 @@ public class BuyTicket {
         }
 
         return new MessageResponse("Ticket created successfully.", MessageType.SUCCESS);
+    }
+
+    /**
+     * This method makes an application to a training program as a housekeeper
+     * @param hkId housekeeper id
+     * @param eventId training program id
+     * @return Message Response
+     */
+    public MessageResponse applyAsHousekeeper(int hkId, int eventId) throws Exception {
+        String query;
+        Long hkDOB = null;      //housekeeper date of birth
+        int hkAge = 0;
+        int minAge = 0;
+        int quota = 0;
+
+        //preconditions
+        if(!createEvent.entryExists("Training_Program", eventId, "event_id", null))
+            return new MessageResponse("No such Training Program.", MessageType.ERROR);
+
+        if(!createEvent.entryExists("Housekeeper", hkId, "id", null))
+            return new MessageResponse("No such Housekeeper.", MessageType.ERROR);
+
+        query = "SELECT date_of_birth\n" +
+                "FROM Users\n" +
+                "WHERE id = " + hkId + ";";
+
+        hkDOB = userFetch.fetchLong(query, "date_of_birth");
+        hkAge = (int) ((System.currentTimeMillis() - hkDOB) / 31556952000L);      //convert to age
+
+        query = "SELECT min_age\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        minAge = userFetch.fetchInt(query, "min_age");
+
+        if(hkAge < minAge)
+            return new MessageResponse("Age requirements not met.", MessageType.ERROR);
+
+        query = "SELECT quota\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        quota = userFetch.fetchInt(query, "quota");
+
+        if(quota <= 0)
+            return new MessageResponse("Not enough quota for this event.", MessageType.ERROR);
+
+        //insertion to the relationship table
+        query = "INSERT INTO HK_Applies_To VALUES (" + hkId + ", " + eventId + ");";
+
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into HK_Applies_To failed",MessageType.ERROR);
+        }
+
+        return new MessageResponse("Application successful.", MessageType.SUCCESS);
+    }
+
+    /**
+     * This method makes an application to a training program as a security staff
+     * @param ssId security staff id
+     * @param eventId training program id
+     * @return Message Response
+     */
+    public MessageResponse applyAsSecurityStaff(int ssId, int eventId) throws Exception {
+        String query;
+        Long ssDOB = null;      //security staff date of birth
+        int ssAge = 0;
+        int minAge = 0;
+        int quota = 0;
+
+        //preconditions
+        if(!createEvent.entryExists("Training_Program", eventId, "event_id", null))
+            return new MessageResponse("No such Training Program.", MessageType.ERROR);
+
+        if(!createEvent.entryExists("Security_Staff", ssId, "id", null))
+            return new MessageResponse("No such Security Staff.", MessageType.ERROR);
+
+        query = "SELECT date_of_birth\n" +
+                "FROM Users\n" +
+                "WHERE id = " + ssId + ";";
+
+        ssDOB = userFetch.fetchLong(query, "date_of_birth");
+        ssAge = (int) ((System.currentTimeMillis() - ssDOB) / 31556952000L);      //convert to age
+
+        query = "SELECT min_age\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        minAge = userFetch.fetchInt(query, "min_age");
+
+        if(ssAge < minAge)
+            return new MessageResponse("Age requirements not met.", MessageType.ERROR);
+
+        query = "SELECT quota\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        quota = userFetch.fetchInt(query, "quota");
+
+        if(quota <= 0)
+            return new MessageResponse("Not enough quota for this event.", MessageType.ERROR);
+
+        //insertion to the relationship table
+        query = "INSERT INTO Sec_Staff_Applies_To VALUES (" + ssId + ", " + eventId + ");";
+
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Sec_Staff_Applies_To failed",MessageType.ERROR);
+        }
+
+        return new MessageResponse("Application successful.", MessageType.SUCCESS);
+    }
+
+    /**
+     * This method evaluates an hk application to a training program
+     * @param hkId housekeeper id
+     * @param eventId event id
+     * @param mgrId manager id, should not be null
+     * @param status status,  Either APPROVED or REJECTED
+     * @return Message response
+     */
+    public MessageResponse evaluateHKApplication(int hkId, int eventId, int mgrId, String status) {
+        String query;
+
+        //preconditions
+        if(!doublePrimaryEntryExists("HK_Applies_To", hkId, "housekeeper_id", eventId, "training_program_id")) {
+            return new MessageResponse("Application not found.", MessageType.ERROR);
+        }
+
+        status = status.toUpperCase();
+        if(!status.equals("APPROVED") && !status.equals("REJECTED")) {
+            return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
+        }
+
+        //insertion to the relationship table
+        query = "INSERT INTO Evaluates_HK_Application VALUES(" + hkId + ", " + eventId + ", " + mgrId + ", '" + status + "');";
+
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Evaluates_HK_Application failed",MessageType.ERROR);
+        }
+
+        if(status.equals("APPROVED")) {
+            query = "UPDATE Event\n" +
+                    "SET quota = quota - 1\n" +
+                    "WHERE event_id = " + eventId + ";";
+
+            if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+                return new MessageResponse("Update of event's quota failed", MessageType.ERROR);
+            }
+        }
+
+        return new MessageResponse("Evaluation successful", MessageType.ERROR);
+    }
+
+    /**
+     * This method evaluates an ss application to a training program
+     * @param ssId security staff id
+     * @param eventId event id
+     * @param mgrId manager id, should not be null
+     * @param status status, Either APPROVED or REJECTED
+     * @return Message response
+     */
+    public MessageResponse evaluateSSApplication(int ssId, int eventId, int mgrId, String status) {
+        String query;
+
+        //preconditions
+        if(!doublePrimaryEntryExists("Sec_Staff_Applies_To", ssId, "housekeeper_id", eventId, "training_program_id")) {
+            return new MessageResponse("Application not found.", MessageType.ERROR);
+        }
+
+        status = status.toUpperCase();
+        if(!status.equals("APPROVED") && !status.equals("REJECTED")) {
+            return new MessageResponse("Status must be either \"APPROVED\" or \"REJECTED\".", MessageType.ERROR);
+        }
+
+        //insertion to the relationship table
+        query = "INSERT INTO Evaluates_Sec_Staff_Application VALUES(" + ssId + ", " + eventId + ", " + mgrId + ", '" + status + "');";
+
+        if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+            return new MessageResponse("Insertion into Evaluates_Sec_Staff_Application failed",MessageType.ERROR);
+        }
+
+        if(status.equals("APPROVED")) {
+            query = "UPDATE Event\n" +
+                    "SET quota = quota - 1\n" +
+                    "WHERE event_id = " + eventId + ";";
+
+            if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){
+                return new MessageResponse("Update of event's quota failed", MessageType.ERROR);
+            }
+        }
+
+        return new MessageResponse("Evaluation successful", MessageType.ERROR);
+    }
+
+    /**
+     * Used when checking if an entry exists when a primary key consists of two integer attributes
+     * @param tableName table name
+     * @param id1 first id
+     * @param idColumnName1 first id column name
+     * @param id2 second id
+     * @param idColumnName2 second id column name
+     * @return boolean
+     */
+    public boolean doublePrimaryEntryExists(String tableName, int id1, String idColumnName1, int id2, String idColumnName2){
+        String query;
+        boolean result;
+        query = "SELECT *\n" +
+                "FROM " + tableName + "\n" +
+                "WHERE " + idColumnName1 + " = " + id1 + " AND " + idColumnName2 + " = " + id2 + ";";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            result = resultSet.next();
+        }
+        catch(SQLException e) {
+            try {
+                connection.close();
+            }
+            catch (SQLException e1) {
+                throw new IllegalArgumentException("Error when closing the connection");        //SKETCHY
+            }
+            return false;
+        }
+        try {
+            connection.close();
+        }
+        catch (SQLException e1) {
+            throw new IllegalArgumentException("Error when closing the connection");        //SKETCHY
+        }
+        return result;
     }
 
     /**
