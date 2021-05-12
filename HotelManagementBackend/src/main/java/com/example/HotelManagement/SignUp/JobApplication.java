@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -167,6 +169,243 @@ public class JobApplication {
             return promotionResponse;
 
         return new MessageResponse("Candidate evaluation successful.", MessageType.SUCCESS);
+    }
+
+    /**
+     * Returns information about a particular job application
+     * @param candidateId candidate id
+     * @param position position
+     * @return dto object
+     */
+    public ViewCandidateDTO viewJobApplication(int candidateId, String position) {
+        String query;
+        ViewCandidateDTO dto = null;
+
+        position = position.toUpperCase(Locale.ENGLISH);
+
+        //precondition
+        if(!jobEntryExists("Job_Application", candidateId, position))
+            throw new IllegalArgumentException("Job Application not found.");
+
+        if(createEvent.entryExists("Candidate", candidateId, "id", null)) {
+            query = "SELECT *\n" +
+                    "FROM Users NATURAL JOIN Candidate NATURAL JOIN Job_Application\n" +
+                    "WHERE id = " + candidateId + " AND position = '" + position + "';";
+        }
+        else {
+            query = "SELECT *\n" +
+                    "FROM Users NATURAL JOIN Job_Application\n" +
+                    "WHERE id = " + candidateId + " AND position = '" + position + "';";
+        }
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            if(!resultSet.next())
+                throw new IllegalArgumentException("Job Application could not be fetched.");
+
+            if(createEvent.entryExists("Candidate", candidateId, "id", null)) {
+                dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        resultSet.getString("cover_letter"),
+                        resultSet.getString("position"),
+                        resultSet.getString("status"),
+                        "",                                         //intentionally left blank
+                        ""                                         //intentionally left blank
+                );
+            }
+            else {
+                dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status"),
+                        "",                                         //intentionally left blank
+                        ""                                         //intentionally left blank
+                );
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return dto;
+    }
+
+    /**
+     * Lists all the job applications
+     * @return dto object
+     */
+    public ViewAllCandidatesDTO viewAllJobApplications() {
+        List<ViewCandidateDTO> dtoList = new ArrayList<>();
+        String query;
+
+        query = "SELECT *\n" +
+                "FROM Users NATURAL JOIN Job_Application\n" +
+                "ORDER BY CASE WHEN status = 'PENDING' THEN 1\n" +
+                "              WHEN status = 'APPROVED' THEN 2\n" +
+                "              ELSE 3\n" +
+                "         END ASC;";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            while (resultSet.next()) {
+                ViewCandidateDTO dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status"),
+                        "",                                         //intentionally left blank
+                        ""                                         //intentionally left blank
+                );
+                dtoList.add(dto);
+            }
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllCandidatesDTO(dtoList);
+    }
+
+    /**
+     * Lists all the applications of the given candidate
+     * @param candidateId candidate id
+     * @return dto object
+     */
+    public ViewAllCandidatesDTO viewMyJobApplications(int candidateId) {
+        List<ViewCandidateDTO> dtoList = new ArrayList<>();
+        String query;
+
+        query = "SELECT *\n" +
+                "FROM Users NATURAL JOIN Job_Application\n" +
+                "WHERE id = " + candidateId + " AND status = 'PENDING';";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            while (resultSet.next()) {
+                ViewCandidateDTO dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status"),
+                        "",
+                        ""
+                );
+                dtoList.add(dto);
+            }
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        query = "SELECT u.id, u.firstname, u.lastname, u.email, u.password, u.phone, u.address, u.gender, u.date_of_birth,\n" +
+                "       c.cover_letter, ja.position, ja.status, u2.firstname, u2.lastname\n" +
+                "FROM Users u NATURAL JOIN Candidate c NATURAL JOIN Job_Application ja, Approves a, Users u2\n" +
+                "WHERE u.id = " + candidateId + " AND ja.id = a.candidate_id AND ja.position = a.position AND a.recruiter_id = u2.id\n" +
+                "ORDER BY CASE WHEN status = 'PENDING' THEN 1\n" +
+                "              WHEN status = 'APPROVED' THEN 2\n" +
+                "              ELSE 3\n" +
+                "         END ASC;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while (resultSet.next()) {
+                ViewCandidateDTO dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("u.firstname"),
+                        resultSet.getString("u.lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status"),
+                        resultSet.getString("u2.firstname"),
+                        resultSet.getString("u2.lastname")
+                );
+                dtoList.add(dto);
+            }
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllCandidatesDTO(dtoList);
     }
 
     /**
