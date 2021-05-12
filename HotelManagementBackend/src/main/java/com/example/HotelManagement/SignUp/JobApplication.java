@@ -181,13 +181,22 @@ public class JobApplication {
         String query;
         ViewCandidateDTO dto = null;
 
+        position = position.toUpperCase(Locale.ENGLISH);
+
         //precondition
         if(!jobEntryExists("Job_Application", candidateId, position))
             throw new IllegalArgumentException("Job Application not found.");
 
-        query = "SELECT *\n" +
-                "FROM Users NATURAL JOIN Candidate NATURAL JOIN Job_Application\n" +
-                "WHERE id = " + candidateId + " AND position = '" + position + "';";
+        if(createEvent.entryExists("Candidate", candidateId, "id", null)) {
+            query = "SELECT *\n" +
+                    "FROM Users NATURAL JOIN Candidate NATURAL JOIN Job_Application\n" +
+                    "WHERE id = " + candidateId + " AND position = '" + position + "';";
+        }
+        else {
+            query = "SELECT *\n" +
+                    "FROM Users NATURAL JOIN Job_Application\n" +
+                    "WHERE id = " + candidateId + " AND position = '" + position + "';";
+        }
 
         Object[] resultArr = null;
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
@@ -197,20 +206,40 @@ public class JobApplication {
         try {
             if(!resultSet.next())
                 throw new IllegalArgumentException("Job Application could not be fetched.");
-            dto = new ViewCandidateDTO(
-                    resultSet.getInt("id"),
-                    resultSet.getString("firstname"),
-                    resultSet.getString("lastname"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
-                    resultSet.getString("phone"),
-                    resultSet.getString("address"),
-                    resultSet.getString("gender"),
-                    resultSet.getLong("date_of_birth"),
-                    resultSet.getString("cover_letter"),
-                    resultSet.getString("position"),
-                    resultSet.getString("status")
-            );
+
+            if(createEvent.entryExists("Candidate", candidateId, "id", null)) {
+                dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        resultSet.getString("cover_letter"),
+                        resultSet.getString("position"),
+                        resultSet.getString("status")
+                );
+            }
+            else {
+                dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status")
+                );
+            }
+
             connection.close();
         }
         catch ( Exception e ){
@@ -225,8 +254,56 @@ public class JobApplication {
         return dto;
     }
 
+    /**
+     * Lists all the job applications
+     * @return dto object
+     */
     public ViewAllCandidatesDTO viewAllJobApplications() {
         List<ViewCandidateDTO> dtoList = new ArrayList<>();
+        String query;
+
+        query = "SELECT *\n" +
+                "FROM Users NATURAL JOIN Job_Application\n" +
+                "ORDER BY CASE WHEN status = 'PENDING' THEN 1\n" +
+                "              WHEN status = 'APPROVED' THEN 2\n" +
+                "              ELSE 3\n" +
+                "         END ASC;";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            while (resultSet.next()) {
+                ViewCandidateDTO dto = new ViewCandidateDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("address"),
+                        resultSet.getString("gender"),
+                        resultSet.getLong("date_of_birth"),
+                        "",                                         //intentionally left blank
+                        resultSet.getString("position"),
+                        resultSet.getString("status")
+                );
+                dtoList.add(dto);
+            }
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllCandidatesDTO(dtoList);
     }
 
     /**
