@@ -46,6 +46,12 @@ public class RegisterController {
         return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),MessageType.ERROR));
     }
 
+    @GetMapping("/login/{type}/{email}/{password}")
+    public LoginDTO login( @PathVariable("type") String type, @PathVariable("email") String email, @PathVariable("password") String password) throws Exception {
+        LoginDTO loginDTO = makeReservations.login(type,email,password);
+        loginDTO.setRole(type);
+        return loginDTO;
+    }
     /**
      * Registers a guest or a candidate to the system
      * @param type

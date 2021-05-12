@@ -85,4 +85,51 @@ public class MakeReservations {
             return false;
         }
     }
+
+
+    public LoginDTO login(String type, String email, String password) throws Exception {
+
+        String query = "";
+
+        if(type.equals("GUEST")){
+            query = "SELECT * " +
+                    "FROM Guests s NATURAL JOIN Users u " +
+                    " WHERE u.password = '" + password + "' AND u.email = '" + email + "';";
+        }
+        else if( type.equals("MANAGER")){
+            query = "SELECT * " +
+                    "FROM Manager s NATURAL JOIN Users u" +
+                    " WHERE u.password = '" + password + "' AND u.email = '" + email + "';";
+        }
+        else if( type.equals("HOUSEKEEPER")){
+            query = "SELECT * " +
+                    "FROM Housekeeper s NATURAL JOIN Users u" +
+                    " WHERE u.password = '" + password + "' AND u.email = '" + email + "';";
+        }
+        else if( type.equals("SECURITY_STAFF")){
+            query = "SELECT * " +
+                    "FROM Security_Staff s NATURAL JOIN Users u" +
+                    " WHERE u.password = '" + password + "' AND u.email = '" + email + "';";
+        }
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            resultSet.next();
+            LoginDTO loginDTO = new LoginDTO(resultSet.getInt("id"),"");
+            connection.close();
+            return loginDTO;
+        } catch (Exception e) {
+            try {
+                connection.close();
+            } catch (Exception e1) {
+                throw new Exception("No such user");
+            }
+            throw new Exception("No such user");
+        }
+    }
 }
