@@ -49,4 +49,9 @@ public class JobApplicationController {
     public ViewAllCandidatesDTO viewAllJobApplications() {
         return jobApplication.viewAllJobApplications();
     }
+    
+    @GetMapping("/viewMyJobApplications/{candidateId}")
+    public ViewAllCandidatesDTO viewMyJobApplications(@PathVariable(name = "candidateId") int candidateId) {
+        return jobApplication.viewMyJobApplications(candidateId);
+    }
 }
