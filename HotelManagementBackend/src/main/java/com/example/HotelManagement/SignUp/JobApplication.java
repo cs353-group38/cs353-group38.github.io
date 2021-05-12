@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -167,6 +169,64 @@ public class JobApplication {
             return promotionResponse;
 
         return new MessageResponse("Candidate evaluation successful.", MessageType.SUCCESS);
+    }
+
+    /**
+     * Returns information about a particular job application
+     * @param candidateId candidate id
+     * @param position position
+     * @return dto object
+     */
+    public ViewCandidateDTO viewJobApplication(int candidateId, String position) {
+        String query;
+        ViewCandidateDTO dto = null;
+
+        //precondition
+        if(!jobEntryExists("Job_Application", candidateId, position))
+            throw new IllegalArgumentException("Job Application not found.");
+
+        query = "SELECT *\n" +
+                "FROM Users NATURAL JOIN Candidate NATURAL JOIN Job_Application\n" +
+                "WHERE id = " + candidateId + " AND position = '" + position + "';";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        ResultSet resultSet = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            if(!resultSet.next())
+                throw new IllegalArgumentException("Job Application could not be fetched.");
+            dto = new ViewCandidateDTO(
+                    resultSet.getInt("id"),
+                    resultSet.getString("firstname"),
+                    resultSet.getString("lastname"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password"),
+                    resultSet.getString("phone"),
+                    resultSet.getString("address"),
+                    resultSet.getString("gender"),
+                    resultSet.getLong("date_of_birth"),
+                    resultSet.getString("cover_letter"),
+                    resultSet.getString("position"),
+                    resultSet.getString("status")
+            );
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return dto;
+    }
+
+    public ViewAllCandidatesDTO viewAllJobApplications() {
+        List<ViewCandidateDTO> dtoList = new ArrayList<>();
     }
 
     /**
