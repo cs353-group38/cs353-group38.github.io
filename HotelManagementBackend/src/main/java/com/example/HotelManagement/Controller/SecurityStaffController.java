@@ -53,4 +53,9 @@ public class SecurityStaffController {
     public ViewAllSecurityWalksDTO viewAllSecurityWalks() {
         return securityStaffOperations.viewAllSecurityWalks();
     }
+
+    @GetMapping("/viewAllSecurityWalks/{ssId}")
+    public ViewAllSecurityWalksDTO viewSecurityStaffWalks(@PathVariable(name = "ssId") int ssId) {
+        return securityStaffOperations.viewSecurityStaffWalks(ssId);
+    }
 }

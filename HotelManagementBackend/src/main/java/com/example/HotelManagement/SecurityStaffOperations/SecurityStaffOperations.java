@@ -64,7 +64,143 @@ public class SecurityStaffOperations {
         query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
                 "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
                 "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
-                "WHERE manager_id = mgr.id AND security_staff_id = ss.id;";
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date > UNIX_TIMESTAMP()\n" +
+                "ORDER BY start_date, end_date;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ViewSecurityWalkDTO viewSecurityWalkDTO = new ViewSecurityWalkDTO(
+                        resultSet.getInt("manager_id"),
+                        resultSet.getInt("security_staff_id"),
+                        resultSet.getString("building_no"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        resultSet.getString("ss_firstname"),
+                        resultSet.getString("ss_lastname"),
+                        resultSet.getString("mgr_firstname"),
+                        resultSet.getString("mgr_lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+                dtoList.add(viewSecurityWalkDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
+                "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
+                "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date <= UNIX_TIMESTAMP()\n" +
+                "ORDER BY start_date DESC;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ViewSecurityWalkDTO viewSecurityWalkDTO = new ViewSecurityWalkDTO(
+                        resultSet.getInt("manager_id"),
+                        resultSet.getInt("security_staff_id"),
+                        resultSet.getString("building_no"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        resultSet.getString("ss_firstname"),
+                        resultSet.getString("ss_lastname"),
+                        resultSet.getString("mgr_firstname"),
+                        resultSet.getString("mgr_lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+                dtoList.add(viewSecurityWalkDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllSecurityWalksDTO(dtoList);
+    }
+
+    /**
+     * Lists the security walks assigned to a particular security staff
+     * @param ssId security staff id
+     * @return dto object
+     */
+    public ViewAllSecurityWalksDTO viewSecurityStaffWalks(int ssId) {
+        String query;
+        List<ViewSecurityWalkDTO> dtoList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        if(!createEvent.entryExists("Security_Staff", ssId, "id", null))
+            throw new IllegalArgumentException("Security staff not found");
+
+        query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
+                "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
+                "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date > UNIX_TIMESTAMP()\n" +
+                "ORDER BY start_date, end_date;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ViewSecurityWalkDTO viewSecurityWalkDTO = new ViewSecurityWalkDTO(
+                        resultSet.getInt("manager_id"),
+                        resultSet.getInt("security_staff_id"),
+                        resultSet.getString("building_no"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        resultSet.getString("ss_firstname"),
+                        resultSet.getString("ss_lastname"),
+                        resultSet.getString("mgr_firstname"),
+                        resultSet.getString("mgr_lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+                dtoList.add(viewSecurityWalkDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
+                "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
+                "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date <= UNIX_TIMESTAMP()\n" +
+                "ORDER BY start_date DESC;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
         resultSet = (ResultSet) resultArr[0];
