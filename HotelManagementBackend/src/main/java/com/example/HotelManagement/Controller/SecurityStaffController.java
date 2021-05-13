@@ -4,6 +4,7 @@ import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.SecurityStaffOperations.SecurityStaffOperations;
 import com.example.HotelManagement.SecurityStaffOperations.SecurityWalkDTO;
+import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityStaffDTO;
 import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityWalksDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +58,10 @@ public class SecurityStaffController {
     @GetMapping("/viewAllSecurityWalks/{ssId}")
     public ViewAllSecurityWalksDTO viewSecurityStaffWalks(@PathVariable(name = "ssId") int ssId) {
         return securityStaffOperations.viewSecurityStaffWalks(ssId);
+    }
+
+    @GetMapping("/viewAllSecurityStaff")
+    public ViewAllSecurityStaffDTO viewAllSecurityStaff() {
+        return securityStaffOperations.viewAllSecurityStaff();
     }
 }

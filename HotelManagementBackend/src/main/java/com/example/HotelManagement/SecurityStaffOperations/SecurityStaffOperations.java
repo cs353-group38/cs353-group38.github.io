@@ -238,6 +238,47 @@ public class SecurityStaffOperations {
         return new ViewAllSecurityWalksDTO(dtoList);
     }
 
+    public ViewAllSecurityStaffDTO viewAllSecurityStaff() {
+        String query;
+        List<SecurityStaffDTO> dtoList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT id, firstname, lastname, security_rank, weapon\n" +
+                "FROM Users NATURAL JOIN Security_Staff\n" +
+                "ORDER BY firstname;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                SecurityStaffDTO securityStaffDTO = new SecurityStaffDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+                dtoList.add(securityStaffDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllSecurityStaffDTO(dtoList);
+    }
+
     /**
      * Executes an update in the database. Be careful with the message responses when using this.
      * @param query query
