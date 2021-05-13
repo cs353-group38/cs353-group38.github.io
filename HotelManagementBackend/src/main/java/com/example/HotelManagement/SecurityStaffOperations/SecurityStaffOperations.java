@@ -8,7 +8,10 @@ import com.example.HotelManagement.SignUp.UserFetch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SecurityStaffOperations {
@@ -45,6 +48,58 @@ public class SecurityStaffOperations {
         query = "INSERT INTO Security_Walk VALUES (" + mgrId + ", " + ssId + ", '" + buildingNo + "', " +
                 startDate + ", " + endDate + ");";
         return executeUpdate(query);
+    }
+
+    /**
+     * Returns all the security walks in the system
+     * @return dto object
+     */
+    public ViewAllSecurityWalksDTO viewAllSecurityWalks() {
+        String query;
+        List<ViewSecurityWalkDTO> dtoList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
+                "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
+                "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ViewSecurityWalkDTO viewSecurityWalkDTO = new ViewSecurityWalkDTO(
+                        resultSet.getInt("manager_id"),
+                        resultSet.getInt("security_staff_id"),
+                        resultSet.getString("building_no"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        resultSet.getString("ss_firstname"),
+                        resultSet.getString("ss_lastname"),
+                        resultSet.getString("mgr_firstname"),
+                        resultSet.getString("mgr_lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+                dtoList.add(viewSecurityWalkDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllSecurityWalksDTO(dtoList);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.SecurityStaffOperations.SecurityStaffOperations;
 import com.example.HotelManagement.SecurityStaffOperations.SecurityWalkDTO;
+import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityWalksDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,5 +47,10 @@ public class SecurityStaffController {
                securityWalkDTO.getStartDate(),
                securityWalkDTO.getEndDate()
         );
+    }
+
+    @GetMapping("/viewAllSecurityWalks")
+    public ViewAllSecurityWalksDTO viewAllSecurityWalks() {
+        return securityStaffOperations.viewAllSecurityWalks();
     }
 }
