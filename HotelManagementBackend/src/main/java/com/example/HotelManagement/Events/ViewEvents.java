@@ -202,4 +202,185 @@ public class ViewEvents {
         }
         return new ViewAllGroupToursDTO(viewGroupTourDTOList);
     }
+
+    /**
+     * View a particular training program
+     * @param eventId event id
+     * @return dto object
+     */
+    public ViewTrainingProgramDTO viewTrainingProgram(int eventId) {
+        String query;
+        List<ParticipantDTO> applicantList = new ArrayList<>();
+        List<ParticipantDTO> participantList = new ArrayList<>();
+        ViewTrainingProgramDTO viewTrainingProgramDTO = null;
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        //Preconditions
+        if(!createEvent.entryExists("Training_Program", eventId, "event_id", null))
+            throw new IllegalArgumentException("No such event.");
+
+        //========================FILL THE PARTICIPANT LIST========================
+        query = "SELECT *\n" +
+                "FROM Evaluates_HK_Application, Users\n" +
+                "WHERE housekeeper_id = id AND training_program_id = " + eventId + " AND application_status = 'APPROVED';";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ParticipantDTO participantDTO = new ParticipantDTO(
+                        resultSet.getInt("housekeeper_id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname")
+                );
+                participantList.add(participantDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        query = "SELECT *\n" +
+                "FROM Evaluates_Sec_Staff_Application, Users\n" +
+                "WHERE sec_staff_id = id AND training_program_id = " + eventId + " AND application_status = 'APPROVED';";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ParticipantDTO participantDTO = new ParticipantDTO(
+                        resultSet.getInt("sec_staff_id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname")
+                );
+                participantList.add(participantDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+        //========================FILL THE PARTICIPANT LIST========================
+
+        //========================FILL THE APPLICANT LIST========================
+        query = "(SELECT *\n" +
+                "FROM HK_Applies_To, Users\n" +
+                "WHERE housekeeper_id = id AND training_program_id = " + eventId + " AND housekeeper_id NOT IN (SELECT Evaluates_HK_Application.housekeeper_id\n" +
+                "                                                                                     FROM Evaluates_HK_Application, Users\n" +
+                "                                                                                     WHERE housekeeper_id = id AND training_program_id = " + eventId + " AND application_status = 'APPROVED'));";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ParticipantDTO participantDTO = new ParticipantDTO(
+                        resultSet.getInt("housekeeper_id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname")
+                );
+                applicantList.add(participantDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        query = "(SELECT *\n" +
+                "FROM Sec_Staff_Applies_To, Users\n" +
+                "WHERE sec_staff_id = id AND training_program_id = " + eventId + " AND sec_staff_id NOT IN (SELECT Evaluates_Sec_Staff_Application.sec_staff_id\n" +
+                "                                                                                     FROM Evaluates_Sec_Staff_Application, Users\n" +
+                "                                                                                     WHERE sec_staff_id = id AND training_program_id = " + eventId + " AND application_status = 'APPROVED'));";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ParticipantDTO participantDTO = new ParticipantDTO(
+                        resultSet.getInt("sec_staff_id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname")
+                );
+                applicantList.add(participantDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+        //========================FILL THE APPLICANT LIST========================
+
+        query = "SELECT *\n" +
+                "FROM Event\n" +
+                "WHERE event_id = " + eventId + ";";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            if(!resultSet.next())
+                throw new IllegalArgumentException("No such event.");
+
+            viewTrainingProgramDTO = new ViewTrainingProgramDTO(
+                    resultSet.getString("event_name"),
+                    resultSet.getString("location_name"),
+                    resultSet.getLong("start_date"),
+                    resultSet.getLong("end_date"),
+                    resultSet.getInt("min_age"),
+                    resultSet.getInt("quota"),
+                    resultSet.getString("description"),
+                    resultSet.getInt("manager_id"),
+                    applicantList,
+                    participantList
+            );
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return viewTrainingProgramDTO;
+    }
 }

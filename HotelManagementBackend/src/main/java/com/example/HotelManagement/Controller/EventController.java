@@ -115,4 +115,9 @@ public class EventController {
     public ViewAllGroupToursDTO viewAllGuestActivities() {
         return viewEvents.viewAllGuestActivities();
     }
+
+    @GetMapping("/viewTrainingProgram/{eventId}")
+    public ViewTrainingProgramDTO viewTrainingProgram(@PathVariable(name = "eventId") int eventId) {
+        return viewEvents.viewTrainingProgram(eventId);
+    }
 }
