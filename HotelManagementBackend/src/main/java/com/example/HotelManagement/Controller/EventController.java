@@ -11,11 +11,13 @@ public class EventController {
 
     private final CreateEvent createEvent;
     private final BuyTicket buyTicket;
+    private final ViewEvents viewEvents;
 
     @Autowired
-    public EventController(CreateEvent createEvent, BuyTicket buyTicket) {
+    public EventController(CreateEvent createEvent, BuyTicket buyTicket, ViewEvents viewEvents) {
         this.createEvent = createEvent;
         this.buyTicket = buyTicket;
+        this.viewEvents = viewEvents;
     }
 
     @PostMapping("/createTrainingProgram")
@@ -102,5 +104,15 @@ public class EventController {
     @PostMapping("/evaluateSSApplication")
     public MessageResponse evaluateSSApplication(@RequestBody EvaluateEmployeeDTO dto) {
         return buyTicket.evaluateSSApplication(dto.getEmployeeId(), dto.getEventId(), dto.getMgrId(), dto.getStatus());
+    }
+
+    @GetMapping("/viewGuestActivity/{eventId}")
+    public ViewGroupTourDTO viewGuestActivity(@PathVariable(name = "eventId") int eventId) {
+        return viewEvents.viewGuestActivity(eventId);
+    }
+
+    @GetMapping("/viewAllGuestActivities")
+    public ViewAllGroupToursDTO viewAllGuestActivities() {
+        return viewEvents.viewAllGuestActivities();
     }
 }
