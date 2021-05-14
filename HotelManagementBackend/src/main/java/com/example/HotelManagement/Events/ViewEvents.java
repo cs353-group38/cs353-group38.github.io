@@ -1,6 +1,7 @@
 package com.example.HotelManagement.Events;
 
 import com.example.HotelManagement.Database.DatabaseConnection;
+import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityStaffDTO;
 import com.example.HotelManagement.SignUp.UserInsertion;
 import com.example.HotelManagement.SignUp.ViewCandidateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,6 +166,57 @@ public class ViewEvents {
 
         query = "SELECT event_id, event_name, location_name, start_date, end_date, quota, price\n" +
                 "FROM Event NATURAL JOIN Guest_Activity;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while (resultSet.next()) {
+                ViewGroupTourDTO viewGroupTourDTO = new ViewGroupTourDTO(
+                        resultSet.getString("event_name"),
+                        resultSet.getString("location_name"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        0,
+                        resultSet.getInt("quota"),
+                        "",
+                        resultSet.getInt("event_id"),
+                        resultSet.getDouble("price"),
+                        "",
+                        "",
+                        0,
+                        new ArrayList<>()
+                );
+                viewGroupTourDTOList.add(viewGroupTourDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+        return new ViewAllGroupToursDTO(viewGroupTourDTOList);
+    }
+
+    public ViewAllGroupToursDTO viewGuestActivitiesByName(String name) {
+        String query;
+        List<ViewGroupTourDTO> viewGroupTourDTOList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT event_id, event_name, location_name, start_date, end_date, quota, price\n" +
+                "FROM Event NATURAL JOIN Guest_Activity\n" +
+                "WHERE event_name LIKE '%" + name + "%'\n" +
+                "ORDER BY CASE WHEN event_name LIKE '" + name + "%' THEN 1\n" +
+                "              WHEN event_name LIKE '%" + name + "%' THEN 2\n" +
+                "END;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
         resultSet = (ResultSet) resultArr[0];
