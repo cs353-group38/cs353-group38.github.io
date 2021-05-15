@@ -50,6 +50,56 @@ public class SecurityStaffOperations {
         return executeUpdate(query);
     }
 
+    public ViewSecurityWalkDTO viewSecurityWalk(SecurityWalkDTO securityWalkDTO) {
+        String query;
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+        ViewSecurityWalkDTO dto = null;
+
+        query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
+                "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
+                "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
+                "WHERE manager_id = " + securityWalkDTO.getMgrId() + " AND security_staff_id = " + securityWalkDTO.getSsId() + " AND building_no = '" + securityWalkDTO.getBuildingNo() + "' AND start_date = " + securityWalkDTO.getStartDate() + " AND end_date = " + securityWalkDTO.getEndDate() + " AND\n" +
+                "      mgr.id = manager_id AND security_staff_id = ss.id;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            if(resultSet.next()) {
+                dto = new ViewSecurityWalkDTO(
+                        resultSet.getInt("manager_id"),
+                        resultSet.getInt("security_staff_id"),
+                        resultSet.getString("building_no"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        resultSet.getString("ss_firstname"),
+                        resultSet.getString("ss_lastname"),
+                        resultSet.getString("mgr_firstname"),
+                        resultSet.getString("mgr_lastname"),
+                        resultSet.getString("security_rank"),
+                        resultSet.getString("weapon")
+                );
+            }
+            else
+                throw new IllegalArgumentException("No such security walk");
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return dto;
+    }
+
     /**
      * Returns all the security walks in the system
      * @return dto object

@@ -499,4 +499,57 @@ public class ViewEvents {
 
         return new ViewAllGroupToursDTO(viewGroupTourDTOList);
     }
+
+    /**
+     * Lists all the training programs in the system
+     * @return dto object
+     */
+    public ViewAllGroupToursDTO viewAllTrainingPrograms(int mgrId) {
+        String query;
+        List<ViewGroupTourDTO> viewGroupTourDTOList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT *\n" +
+                "FROM Event NATURAL JOIN Training_Program\n" +
+                "WHERE manager_id = " + mgrId + ";";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                ViewGroupTourDTO viewGroupTourDTO = new ViewGroupTourDTO(
+                        resultSet.getString("event_name"),
+                        resultSet.getString("location_name"),
+                        resultSet.getLong("start_date"),
+                        resultSet.getLong("end_date"),
+                        0,
+                        resultSet.getInt("quota"),
+                        "",
+                        resultSet.getInt("event_id"),
+                        0,
+                        "",
+                        "",
+                        0,
+                        new ArrayList<>()
+                );
+                viewGroupTourDTOList.add(viewGroupTourDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new ViewAllGroupToursDTO(viewGroupTourDTOList);
+    }
 }

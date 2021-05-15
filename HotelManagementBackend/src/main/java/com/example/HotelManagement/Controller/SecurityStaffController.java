@@ -2,10 +2,7 @@ package com.example.HotelManagement.Controller;
 
 import com.example.HotelManagement.DTO.MessageResponse;
 import com.example.HotelManagement.DTO.MessageType;
-import com.example.HotelManagement.SecurityStaffOperations.SecurityStaffOperations;
-import com.example.HotelManagement.SecurityStaffOperations.SecurityWalkDTO;
-import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityStaffDTO;
-import com.example.HotelManagement.SecurityStaffOperations.ViewAllSecurityWalksDTO;
+import com.example.HotelManagement.SecurityStaffOperations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,5 +60,10 @@ public class SecurityStaffController {
     @GetMapping("/viewAllSecurityStaff")
     public ViewAllSecurityStaffDTO viewAllSecurityStaff() {
         return securityStaffOperations.viewAllSecurityStaff();
+    }
+
+    @GetMapping("/viewSecurityWalk")
+    public ViewSecurityWalkDTO viewSecurityWalk(@RequestBody SecurityWalkDTO securityWalkDTO) {
+        return securityStaffOperations.viewSecurityWalk(securityWalkDTO);
     }
 }
