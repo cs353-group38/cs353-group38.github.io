@@ -204,16 +204,26 @@ public class ViewEvents {
         return new ViewAllGroupToursDTO(viewGroupTourDTOList);
     }
 
-    public ViewAllGroupToursDTO viewGuestActivitiesByName(String name) {
+    /**
+     * Lists the guest activities with a given name. Name can be a part of the event name, case insensitive.
+     * @param name event name
+     * @return list
+     */
+    public ViewAllGroupToursDTO viewGuestActivitiesByName(String name, Long lowerLimit, Long upperLimit) {
         String query;
         List<ViewGroupTourDTO> viewGroupTourDTOList = new ArrayList<>();
         Object[] resultArr = null;
         ResultSet resultSet;
         Connection connection;
 
+        if(lowerLimit == null)
+            lowerLimit = 0L;
+        if(upperLimit == null)
+            upperLimit = 2621039186379L;
+
         query = "SELECT event_id, event_name, location_name, start_date, end_date, quota, price\n" +
                 "FROM Event NATURAL JOIN Guest_Activity\n" +
-                "WHERE event_name LIKE '%" + name + "%'\n" +
+                "WHERE event_name LIKE '%" + name + "%' AND start_date >= " + lowerLimit + " AND end_date <= " + upperLimit + "\n" +
                 "ORDER BY CASE WHEN event_name LIKE '" + name + "%' THEN 1\n" +
                 "              WHEN event_name LIKE '%" + name + "%' THEN 2\n" +
                 "END;";

@@ -116,9 +116,9 @@ public class EventController {
         return viewEvents.viewAllGuestActivities();
     }
 
-    @GetMapping("/viewGuestActivitiesByName/{eventName}")
-    public ViewAllGroupToursDTO viewGuestActivitiesByName(@PathVariable(name = "eventName") String eventName) {
-        return viewEvents.viewGuestActivitiesByName(eventName);
+    @GetMapping("/viewGuestActivitiesByName")
+    public ViewAllGroupToursDTO viewGuestActivitiesByName(@RequestBody SearchEventDTO dto) {
+        return viewEvents.viewGuestActivitiesByName(dto.getEventName(), dto.getLowerLimit(), dto.getUpperLimit());
     }
 
     @GetMapping("/viewTrainingProgram/{eventId}")
