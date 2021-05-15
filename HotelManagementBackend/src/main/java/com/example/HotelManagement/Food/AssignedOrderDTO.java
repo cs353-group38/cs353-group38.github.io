@@ -3,6 +3,8 @@ package com.example.HotelManagement.Food;
 import java.util.List;
 
 public class AssignedOrderDTO {
+    private int orderID;
+
     private String guestName;
 
     private int guestRoomNo;
@@ -19,8 +21,9 @@ public class AssignedOrderDTO {
 
     private List<String> foodNames;
 
-    public AssignedOrderDTO(String guestName, int guestRoomNo, String guestBuildingNo, String guestLocationName,
+    public AssignedOrderDTO(int orderID, String guestName, int guestRoomNo, String guestBuildingNo, String guestLocationName,
                             String restaurantName, String restaurantLocationName, String managerName, List<String> foodNames) {
+        this.orderID = orderID;
         this.guestName = guestName;
         this.guestRoomNo = guestRoomNo;
         this.guestBuildingNo = guestBuildingNo;
@@ -93,5 +96,13 @@ public class AssignedOrderDTO {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public int getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 }

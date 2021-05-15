@@ -327,6 +327,7 @@ public class ViewFoods {
                 foods.add(rs.getString("fd.name"));
                 assignedOrderDTO =
                         new AssignedOrderDTO(
+                                rs.getInt("fo.order_id"),
                                 rs.getString("u1.firstname") + " " + rs.getString("u1.lastname"),
                                 rs.getInt("r.room_no"),
                                 rs.getString("r.building_no"),
@@ -351,4 +352,6 @@ public class ViewFoods {
 
         return assignedOrderDTO;
     }
+
+
 }

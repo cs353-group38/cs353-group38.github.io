@@ -101,6 +101,16 @@ public class RegisterController {
     }
 
     /**
+     * View all of the reservations
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/availableRoomTypes")
+    public List<String> viewAllRoomTypes( @RequestBody MakeReservationDTO makeReservationDTO) throws Exception {
+        return viewReservations.viewRoomTypes(makeReservationDTO);
+    }
+
+    /**
      * View reservations of a spesific guest
      * @param guestId
      * @return

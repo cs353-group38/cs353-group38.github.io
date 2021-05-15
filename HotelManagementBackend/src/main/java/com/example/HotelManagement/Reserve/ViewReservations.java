@@ -1,5 +1,7 @@
 package com.example.HotelManagement.Reserve;
 
+import com.example.HotelManagement.DTO.MessageResponse;
+import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.SignUp.UserFetch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,5 +181,43 @@ public class ViewReservations {
         }
 
         return rooms;
+    }
+
+    public List<String> viewRoomTypes(MakeReservationDTO makeReservationDTO) throws Exception {
+
+        List<String> arr = new ArrayList<>();
+
+        String query = "SELECT * FROM ( Room as r NATURAL JOIN Room_Type rt NATURAL JOIN Reservation res)" +
+                " WHERE (r.room_no,r.building_no) NOT IN ("+
+                "SELECT res1.room_no,res1.building_no FROM Reservation as res1 " +
+                "WHERE (res1.check_out_date >= " + makeReservationDTO.getCheckInDate() +
+                " AND res1.check_in_date <= " + makeReservationDTO.getCheckInDate() + " ) OR (res1.check_out_date >= " + makeReservationDTO.getCheckOutDate() +
+                " AND res1.check_in_date <= " + makeReservationDTO.getCheckOutDate() + " ));";
+
+        Object[] resultArr = null;
+        resultArr = databaseConnection.execute(query,DatabaseConnection.FETCH);
+
+        ResultSet rs = (ResultSet) resultArr[0];
+        Connection connection = (Connection) resultArr[1];
+
+        try {
+            while ( rs.next()){
+                String a = rs.getString("r.type");
+                if( !arr.contains(a)) {
+                    arr.add(a);
+                }
+            }
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new Exception("Cannot close connection");
+            }
+            throw  new Exception("cannot do the whole fetching process");
+        }
+
+        return arr;
     }
 }

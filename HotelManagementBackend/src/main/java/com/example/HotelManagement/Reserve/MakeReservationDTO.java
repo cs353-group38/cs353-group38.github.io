@@ -2,38 +2,35 @@ package com.example.HotelManagement.Reserve;
 
 public class MakeReservationDTO {
 
-    private int roomNo;
+    private String roomType;
 
     private int guestId;
-
-    private String buildingNo;
 
     private Long checkInDate;
 
     private Long checkOutDate;
 
-    public MakeReservationDTO(int roomNo, int guestId, String buildingNo, Long checkInDate, Long checkOutDate) {
-        this.roomNo = roomNo;
+    public MakeReservationDTO(String roomType, int guestId, Long checkInDate, Long checkOutDate) {
+        this.roomType = roomType;
         this.guestId = guestId;
-        this.buildingNo = buildingNo;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
     }
 
-    public int getRoomNo() {
-        return roomNo;
+    public String getRoomType() {
+        return roomType;
     }
 
-    public void setRoomNo(int roomNo) {
-        this.roomNo = roomNo;
+    public void setRoomType(String roomType) {
+        this.roomType = roomType;
     }
 
-    public String getBuildingNo() {
-        return buildingNo;
+    public int getGuestId() {
+        return guestId;
     }
 
-    public void setBuildingNo(String buildingNo) {
-        this.buildingNo = buildingNo;
+    public void setGuestId(int guestId) {
+        this.guestId = guestId;
     }
 
     public Long getCheckInDate() {
@@ -50,13 +47,5 @@ public class MakeReservationDTO {
 
     public void setCheckOutDate(Long checkOutDate) {
         this.checkOutDate = checkOutDate;
-    }
-
-    public int getGuestId() {
-        return guestId;
-    }
-
-    public void setGuestId(int guestId) {
-        this.guestId = guestId;
     }
 }
