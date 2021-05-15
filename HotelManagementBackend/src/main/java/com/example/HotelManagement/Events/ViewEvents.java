@@ -216,6 +216,8 @@ public class ViewEvents {
         ResultSet resultSet;
         Connection connection;
 
+        if(name == null)
+            name = "";
         if(lowerLimit == null)
             lowerLimit = 0L;
         if(upperLimit == null)
