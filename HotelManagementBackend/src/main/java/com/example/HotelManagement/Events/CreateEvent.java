@@ -84,8 +84,9 @@ public class CreateEvent {
                                                   int minAge, int quota, String description, int mgrId) {
         String query;
         int id = generateEventId();
-        if(createEvent(id, eventName, locationName, startDate, endDate, minAge, quota, description, mgrId).getMessageType().equals(MessageType.ERROR))
-            return new MessageResponse("Training Program insertion failed.", MessageType.ERROR);
+        MessageResponse createResponse = createEvent(id, eventName, locationName, startDate, endDate, minAge, quota, description, mgrId);
+        if(createResponse.getMessageType().equals(MessageType.ERROR))
+            return createResponse;
 
         query = "INSERT INTO Training_Program VALUES (" + id + ");";
         if(userInsertion.executeUpdate(query).getMessageType().equals(MessageType.ERROR)){

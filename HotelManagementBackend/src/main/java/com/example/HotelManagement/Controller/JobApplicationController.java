@@ -45,7 +45,7 @@ public class JobApplicationController {
         return jobApplication.viewJobApplication(candidateId, position);
     }
 
-    @GetMapping("viewAllJobApplications")
+    @GetMapping("/viewAllJobApplications")
     public ViewAllCandidatesDTO viewAllJobApplications() {
         return jobApplication.viewAllJobApplications();
     }

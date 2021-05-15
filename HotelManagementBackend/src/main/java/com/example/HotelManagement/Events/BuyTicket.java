@@ -57,6 +57,10 @@ public class BuyTicket {
         if(!createEvent.entryExists("Guests", guestId, "id", null))
             return new MessageResponse("No such Guest.", MessageType.ERROR);
 
+        if(doublePrimaryEntryExists("Ticket", guestId, "guest_id", eventId, "event_id")) {
+            return new MessageResponse("You cannot join the same activity twice.", MessageType.ERROR);
+        }
+
         query = "SELECT date_of_birth\n" +
                 "FROM Users\n" +
                 "WHERE id = " + guestId + ";";
