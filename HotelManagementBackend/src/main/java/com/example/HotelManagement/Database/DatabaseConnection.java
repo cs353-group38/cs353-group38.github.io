@@ -187,6 +187,7 @@ public class DatabaseConnection {
         if (createTable(CREATE_APPROVES) == 0) {return 0;}
         if (createTable(CREATE_SECURITY_WALK) == 0) {return 0;}
         if (createTable(CREATE_CLEANING_DUTY) == 0) {return 0;}
+        //if(createTable(CREATE_ORDER_FOOD_TRIGGER) == 0) {return 0;}
         return 1;
     }
 
@@ -674,4 +675,15 @@ public class DatabaseConnection {
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
             "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND UNIX_TIMESTAMP() <= date)) ENGINE=InnoDB;";
+
+    public static final String CREATE_ORDER_FOOD_TRIGGER = "CREATE TRIGGER order_food AFTER INSERT ON Order_Contains\n" +
+            "    FOR EACH ROW\n" +
+            "    BEGIN\n" +
+            "        UPDATE Food_Drink F\n" +
+            "        SET F.no_in_stock = F.no_in_stock - 1\n" +
+            "        WHERE F.food_id = NEW.food_id;\n" +
+            "        UPDATE Guests G\n" +
+            "        SET G.money_spent = G.money_spent + (SELECT price FROM Food_Drink WHERE Food_Drink.food_id = NEW.food_id)\n" +
+            "        WHERE G.id = (SELECT guest_id FROM Food_Order WHERE Food_Order.order_id = NEW.order_id);\n" +
+            "    END;";
 }
