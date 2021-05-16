@@ -45,7 +45,8 @@ public class MakeReservations {
                 "SELECT res1.room_no,res1.building_no FROM Reservation as res1 " +
                 "WHERE (res1.check_out_date >= " + makeReservationDTO.getCheckInDate() +
                 " AND res1.check_in_date <= " + makeReservationDTO.getCheckInDate() + " ) OR (res1.check_out_date >= " + makeReservationDTO.getCheckOutDate() +
-                " AND res1.check_in_date <= " + makeReservationDTO.getCheckOutDate() + " )); ";
+                " AND res1.check_in_date <= " + makeReservationDTO.getCheckOutDate() + " ) OR (res1.check_out_date <= " + makeReservationDTO.getCheckOutDate() +
+                " AND res1.check_in_date >= " + makeReservationDTO.getCheckInDate() + ") );";
 
 
         Object[] resultArr = null;
