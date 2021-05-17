@@ -500,6 +500,48 @@ public class UserInsertion {
         return new UserAgeReportDTO(userAgeDTOList);
     }
 
+    public RoomTypeReportDTO viewRoomTypes() {
+        String query;
+        List<RoomTypeDTO> roomTypeDTOList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT type, reservation_count, avg_money_spent\n" +
+                "FROM (SELECT type, COUNT(DISTINCT reservation_id) AS reservation_count, AVG(money_spent) AS avg_money_spent\n" +
+                "      FROM Room_Type NATURAL JOIN Room NATURAL JOIN Reservation, Guests\n" +
+                "      WHERE guest_id = Guests.id\n" +
+                "      GROUP BY type) AS Room_Type_Stats\n" +
+                "WHERE reservation_count > 0;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                RoomTypeDTO roomTypeDTO = new RoomTypeDTO(
+                        resultSet.getString("type"),
+                        resultSet.getInt("reservation_count"),
+                        resultSet.getDouble("avg_money_spent")
+                );
+                roomTypeDTOList.add(roomTypeDTO);
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new RoomTypeReportDTO(roomTypeDTOList);
+    }
+
     /**
      * Generates an id that does not exist in the Users table.
      * @return The id
