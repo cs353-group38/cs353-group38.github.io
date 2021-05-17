@@ -26,18 +26,6 @@ import Training from "./pages-manager/Training"
 import AssignDuty from "./pages-manager/AssignDuty"
 import Confirmation from "./pages-manager/Confirmation";
 
-import Orders from './pages/Orders'
-import ApplyTo from './pages/ApplyTo'
-import LoginToHousekeeper from "./pages/LoginToHousekeeper"
-import SecurityLogin from"./pages/SecurityLogin"
-import SecurityWalks from "./pages/SecurityWalks"
-import LeaveForHousekeeper from "./pages/LeaveForHousekeeper";
-import TrainingForHousekeeper from "./pages/TrainingForHousekeeper"
-import TrainingForSecurity from "./pages/TrainingForSecurity"
-import HomeForSecurity from "./pages/HomeForSecurity"
-import LeaveForSecurity from "./pages/LeaveForSecurity"
-import ApplySecurity from "./pages/ApplySecurity"
-
 function App() {
     return (
         <><Switch>
@@ -61,25 +49,7 @@ function App() {
             <Route exact path="/evaluate-leave" component={LeaveManager}/>
             <Route exact path="/confirmation" component={Confirmation}/>
 
-
-                        <Route exact path="/applyTo/" component={ApplyTo}/>
-                        <Route exact path="/applyTo/:slug" component={Orders}/>
-                        <Route exact path="/HomeForHousekeeper/" component={Home}/>
-
-                        <Route exact path="/LoginToHousekeeper/" component={LoginToHousekeeper}/>
-                        <Route exact path="/LeaveForHousekeeper/" component={LeaveForHousekeeper}/>
-                        <Route exact path="/HomeForSecurity/" component={HomeForSecurity}/>
-                        <Route exact path="/applySecurity/" component={ApplySecurity}/>
-                        <Route exact path="/LoginToSecurity/" component={SecurityLogin}/>
-                        <Route exact path="/viewSecurity/" component={SecurityWalks}/>
-                        <Route exact path="/SecurityApplyPage/" component={ApplySecurity}/>
-                        <Route exact path="/LeaveForSecurity/" component={LeaveForSecurity}/>
-                        <Route exact path="/TrainingForSecurity/" component={TrainingForSecurity}/>
-                        <Route exact path="/TrainingForHousekeeper/" component={TrainingForHousekeeper}/>
-
-
-
-                        <Route component={Error}/>
+            <Route component={Error}/>
         </Switch></>
     );
 }
