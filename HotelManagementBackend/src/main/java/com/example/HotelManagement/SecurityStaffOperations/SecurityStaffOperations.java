@@ -114,7 +114,7 @@ public class SecurityStaffOperations {
         query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
                 "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
                 "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
-                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date > UNIX_TIMESTAMP()\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date > UNIX_TIMESTAMP() * 1000\n" +
                 "ORDER BY start_date, end_date;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
@@ -153,7 +153,7 @@ public class SecurityStaffOperations {
         query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
                 "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
                 "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
-                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date <= UNIX_TIMESTAMP()\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND end_date <= UNIX_TIMESTAMP() * 1000\n" +
                 "ORDER BY start_date DESC;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
@@ -210,7 +210,7 @@ public class SecurityStaffOperations {
         query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
                 "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
                 "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
-                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date > UNIX_TIMESTAMP()\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date > UNIX_TIMESTAMP() * 1000\n" +
                 "ORDER BY start_date, end_date;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
@@ -249,7 +249,7 @@ public class SecurityStaffOperations {
         query = "SELECT manager_id, security_staff_id, building_no, start_date, end_date, ss.firstname AS ss_firstname, ss.lastname AS ss_lastname,\n" +
                 "       mgr.firstname AS mgr_firstname, mgr.lastname AS mgr_lastname, security_rank, weapon\n" +
                 "FROM Security_Walk, Users ss NATURAL JOIN Security_Staff, Users mgr\n" +
-                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date <= UNIX_TIMESTAMP()\n" +
+                "WHERE manager_id = mgr.id AND security_staff_id = ss.id AND security_staff_id = " + ssId + " AND end_date <= UNIX_TIMESTAMP() * 1000\n" +
                 "ORDER BY start_date DESC;";
 
         resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);

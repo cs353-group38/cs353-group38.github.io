@@ -12,6 +12,7 @@ import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Entity.User;
 import com.example.HotelManagement.Food.*;
 import com.example.HotelManagement.Reserve.*;
+import com.example.HotelManagement.SignUp.UserAgeReportDTO;
 import com.example.HotelManagement.SignUp.UserInsertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -311,6 +312,11 @@ public class RegisterController {
     @GetMapping("/viewComments/{guestId}")
     public List<ViewCommentDTO> viewCommentsGuest( @PathVariable("guestId") int guestId ) throws Exception {
         return makeComment.viewCommentsGuest(guestId);
+    }
+
+    @GetMapping("/viewAgeReport")
+    public UserAgeReportDTO viewAgeReport() {
+        return userInsertion.viewUserAges();
     }
 
 }

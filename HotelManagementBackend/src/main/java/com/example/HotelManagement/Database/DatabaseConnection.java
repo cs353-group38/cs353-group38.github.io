@@ -205,7 +205,7 @@ public class DatabaseConnection {
             "                      gender VARCHAR(20),\n" +
             "                      date_of_birth LONG,\n" +
             "                      PRIMARY KEY (id),\n" +
-            "                      CHECK (date_of_birth < UNIX_TIMESTAMP() AND id > 0 ) ) ENGINE=InnoDB;";
+            "                      CHECK (date_of_birth < UNIX_TIMESTAMP() * 1000 AND id > 0 ) ) ENGINE=InnoDB;";
 
     public static final String CREATE_EMPLOYEE = "CREATE TABLE IF NOT EXISTS Employee(\n" +
             "    id INT,\n" +
@@ -490,7 +490,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (housekeeper_id) REFERENCES Housekeeper(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (order_id > 0 AND guest_id > 0 AND assign_time <= UNIX_TIMESTAMP())) ENGINE=InnoDB;";
+            "    CHECK (order_id > 0 AND guest_id > 0 AND assign_time <= UNIX_TIMESTAMP() * 1000)) ENGINE=InnoDB;";
 
     public static final String CREATE_RESTAURANT = "CREATE TABLE IF NOT EXISTS Restaurant(\n" +
             "    restaurant_id INT,\n" +
@@ -544,7 +544,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (leave_date >= UNIX_TIMESTAMP() AND id > 0 AND days > 0)) ENGINE=InnoDB;";
+            "    CHECK (leave_date >= UNIX_TIMESTAMP() * 1000 AND id > 0 AND days > 0)) ENGINE=InnoDB;";
 
     /*
     ============================RELATIONSHIP TABLE DEFINITIONS============================
@@ -674,7 +674,7 @@ public class DatabaseConnection {
             "    FOREIGN KEY (manager_id) REFERENCES Manager(id)\n" +
             "        ON DELETE CASCADE\n" +
             "        ON UPDATE CASCADE,\n" +
-            "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND UNIX_TIMESTAMP() <= date)) ENGINE=InnoDB;";
+            "    CHECK (housekeeper_id > 0 AND room_no > 0 AND CHAR_LENGTH(building_no) > 0 AND manager_id > 0 AND UNIX_TIMESTAMP() * 1000 <= date)) ENGINE=InnoDB;";
 
     public static final String CREATE_ORDER_FOOD_TRIGGER = "CREATE TRIGGER order_food AFTER INSERT ON Order_Contains\n" +
             "    FOR EACH ROW\n" +

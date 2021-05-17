@@ -5,12 +5,15 @@ import com.example.HotelManagement.DTO.MessageType;
 import com.example.HotelManagement.Database.DatabaseConnection;
 import com.example.HotelManagement.Entity.Candidate;
 import com.example.HotelManagement.Entity.User;
+import com.example.HotelManagement.Events.ViewGroupTourDTO;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserInsertion {
@@ -317,7 +320,7 @@ public class UserInsertion {
             return response;
         }
 
-        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP() * 1000, " + ANNUAL_LEAVE + ");";
         response = executeUpdate(query);
         if(response.getMessageType().equals(MessageType.ERROR)) {
             return response;
@@ -347,7 +350,7 @@ public class UserInsertion {
             return response;
         }
 
-        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP() * 1000, " + ANNUAL_LEAVE + ");";
         response = executeUpdate(query);
         if(response.getMessageType().equals(MessageType.ERROR)) {
             return response;
@@ -377,7 +380,7 @@ public class UserInsertion {
             return response;
         }
 
-        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP() * 1000, " + ANNUAL_LEAVE + ");";
         response = executeUpdate(query);
         if(response.getMessageType().equals(MessageType.ERROR)) {
             return response;
@@ -407,7 +410,7 @@ public class UserInsertion {
             return response;
         }
 
-        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP() * 1000, " + ANNUAL_LEAVE + ");";
         response = executeUpdate(query);
         if(response.getMessageType().equals(MessageType.ERROR)) {
             return response;
@@ -437,7 +440,7 @@ public class UserInsertion {
             return response;
         }
 
-        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP(), " + ANNUAL_LEAVE + ");";
+        query = "INSERT INTO Employee VALUES (" + id + ", " + HK_SALARY + ", UNIX_TIMESTAMP() * 1000, " + ANNUAL_LEAVE + ");";
         response = executeUpdate(query);
         if(response.getMessageType().equals(MessageType.ERROR)) {
             return response;
@@ -445,6 +448,56 @@ public class UserInsertion {
 
         query = "INSERT INTO Security_Staff VALUES (" + id + ", '" + "Beginner" + "', '" + "Pistol" + "');";
         return executeUpdate(query);
+    }
+
+    public UserAgeReportDTO viewUserAges() {
+        String query;
+        List<UserAgeDTO> userAgeDTOList = new ArrayList<>();
+        Object[] resultArr = null;
+        ResultSet resultSet;
+        Connection connection;
+
+        query = "SELECT CASE\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Guests)) THEN 'Guest'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Manager)) THEN 'Manager'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Housekeeper)) THEN 'Housekeeper'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Security_Staff)) THEN 'Security Staff'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Recruiter)) THEN 'Recruiter'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Receptionist)) THEN 'Receptionist'\n" +
+                "           WHEN (Users.id IN (SELECT id FROM Candidate)) THEN 'Candidate'\n" +
+                "        END AS user_type, AVG((UNIX_TIMESTAMP() * 1000 - date_of_birth) / 31556952000) AS avg_age, MIN((UNIX_TIMESTAMP() * 1000 - date_of_birth) / 31556952000) AS min_age, MAX((UNIX_TIMESTAMP() * 1000 - date_of_birth) / 31556952000) max_age\n" +
+                "FROM Users\n" +
+                "GROUP BY user_type;";
+
+        resultArr = databaseConnection.execute(query, DatabaseConnection.FETCH);
+        resultSet = (ResultSet) resultArr[0];
+        connection = (Connection) resultArr[1];
+
+        try {
+            while(resultSet.next()) {
+                if(resultSet.getString("user_type") != null) {
+                    UserAgeDTO userAgeDTO = new UserAgeDTO(
+                            resultSet.getString("user_type"),
+                            (int) Math.floor(resultSet.getDouble("avg_age") + 0.5),
+                            (int) Math.floor(resultSet.getDouble("min_age") + 0.5),
+                            (int) Math.floor(resultSet.getDouble("max_age") + 0.5)
+                    );
+                    userAgeDTOList.add(userAgeDTO);
+                }
+            }
+
+            connection.close();
+        }
+        catch ( Exception e ){
+            try {
+                connection.close();
+            }catch (Exception e1 ){
+                throw new IllegalArgumentException("Connection failure.");
+            }
+            throw new IllegalArgumentException("Connection failure.");
+        }
+
+        return new UserAgeReportDTO(userAgeDTOList);
     }
 
     /**
